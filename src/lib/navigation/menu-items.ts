@@ -1,4 +1,5 @@
 // src/lib/navigation/menu-items.ts
+import React from 'react'
 import { 
   Home, 
   Users, 
@@ -21,12 +22,12 @@ import {
   AlertTriangle,
   Eye
 } from 'lucide-react'
-import { UserRole } from '@/lib/types/auth'
+import { UserRole } from '@/lib/types'
 
 export interface MenuItem {
   title: string
   href: string
-  icon: any
+  icon: React.ComponentType<{ className?: string }>
   badge?: string
   children?: MenuItem[]
 }
@@ -169,7 +170,7 @@ export const getMenuItems = (role: UserRole): MenuItem[] => {
         icon: Bell,
       },
     ],
-    inventory_manager: [
+    inventory: [
       {
         title: 'Dashboard',
         href: '/inventory/dashboard',

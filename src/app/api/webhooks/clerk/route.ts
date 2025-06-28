@@ -3,7 +3,7 @@ import { headers } from 'next/headers'
 import { NextRequest, NextResponse } from 'next/server'
 import { Webhook } from 'svix'
 import { WebhookEvent } from '@clerk/nextjs/server'
-import { apiClient } from '@/lib/utils/api-client'
+import { apiClient } from '@/lib/api/config'
 
 const webhookSecret = process.env.CLERK_WEBHOOK_SECRET
 
@@ -13,7 +13,7 @@ if (!webhookSecret) {
 
 export async function POST(req: NextRequest) {
   // Get the headers
-  const headerPayload = headers()
+  const headerPayload = await headers()
   const svix_id = headerPayload.get('svix-id')
   const svix_timestamp = headerPayload.get('svix-timestamp')
   const svix_signature = headerPayload.get('svix-signature')
@@ -27,10 +27,9 @@ export async function POST(req: NextRequest) {
 
   // Get the body
   const payload = await req.text()
-  const body = JSON.parse(payload)
 
   // Create a new Svix instance with your secret.
-  const wh = new Webhook(webhookSecret)
+  const wh = new Webhook(webhookSecret!)
 
   let evt: WebhookEvent
 
@@ -48,7 +47,6 @@ export async function POST(req: NextRequest) {
     })
   }
 
-  const { id } = evt.data
   const eventType = evt.type
 
   try {
@@ -76,7 +74,15 @@ export async function POST(req: NextRequest) {
   }
 }
 
-async function handleUserCreated(userData: any) {
+interface ClerkUserData {
+  id: string
+  email_addresses: Array<{ email_address: string }>
+  first_name: string | null
+  last_name: string | null
+  image_url: string | null
+}
+
+async function handleUserCreated(userData: ClerkUserData) {
   try {
     await apiClient.post('/auth/webhook/user-created', {
       clerkId: userData.id,
@@ -93,7 +99,7 @@ async function handleUserCreated(userData: any) {
   }
 }
 
-async function handleUserUpdated(userData: any) {
+async function handleUserUpdated(userData: ClerkUserData) {
   try {
     await apiClient.patch(`/auth/webhook/user-updated/${userData.id}`, {
       email: userData.email_addresses[0]?.email_address,
@@ -108,8 +114,15 @@ async function handleUserUpdated(userData: any) {
   }
 }
 
-async function handleUserDeleted(userData: any) {
+interface ClerkDeletedUser {
+  id?: string
+}
+
+async function handleUserDeleted(userData: ClerkDeletedUser) {
   try {
+    if (!userData.id) {
+      throw new Error('User ID is required for deletion')
+    }
     await apiClient.delete(`/auth/webhook/user-deleted/${userData.id}`)
     console.log(`User deleted: ${userData.id}`)
   } catch (error) {

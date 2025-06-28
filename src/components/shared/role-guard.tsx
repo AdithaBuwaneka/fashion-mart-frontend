@@ -2,7 +2,7 @@
 'use client'
 
 import { useAuth } from '@/lib/hooks/use-auth'
-import { UserRole } from '@/lib/types/auth'
+import { UserRole } from '@/lib/types'
 
 interface RoleGuardProps {
   children: React.ReactNode

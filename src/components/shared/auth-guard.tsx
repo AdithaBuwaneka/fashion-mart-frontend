@@ -2,10 +2,11 @@
 'use client'
 
 import { useAuth } from '@/lib/hooks/use-auth'
-import { UserRole } from '@/lib/types/auth'
+import { UserRole } from '@/lib/types'
 import { LoadingScreen } from './loading-screen'
 import { Button } from '@/components/ui/button'
 import { LogIn } from 'lucide-react'
+import Link from 'next/link'
 
 interface AuthGuardProps {
   children: React.ReactNode
@@ -20,7 +21,7 @@ export function AuthGuard({
   requireAuth = true, 
   allowedRoles = [] 
 }: AuthGuardProps) {
-  const { user, isLoading, isSignedIn, hasRole } = useAuth()
+  const { isLoading, isSignedIn, hasRole } = useAuth()
 
   if (isLoading) {
     return <LoadingScreen />
@@ -48,10 +49,10 @@ function SignInPrompt() {
           You need to sign in to access this page. Please sign in with your account to continue.
         </p>
         <Button asChild size="lg" className="w-full">
-          <a href="/sign-in">
+          <Link href="/sign-in">
             <LogIn className="w-4 h-4 mr-2" />
             Sign In
-          </a>
+          </Link>
         </Button>
       </div>
     </div>

@@ -2,10 +2,10 @@
 // src/lib/context/auth-context.tsx
 'use client'
 
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
-import { useUser } from '@clerk/nextjs'
-import { User, UserRole } from '@/lib/types/auth'
-import { apiClient } from '@/lib/utils/api-client'
+import { createContext, useContext, useEffect, useState, ReactNode, useCallback } from 'react'
+import { useUser, useAuth as useClerkAuth } from '@clerk/nextjs'
+import { User, UserRole } from '@/lib/types'
+import { apiClient } from '@/lib/api/config'
 import toast from 'react-hot-toast'
 
 interface AuthContextType {
@@ -22,10 +22,11 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const { user: clerkUser, isLoaded, isSignedIn } = useUser()
+  const { getToken } = useClerkAuth()
   const [user, setUser] = useState<User | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
-  const fetchUserData = async () => {
+  const fetchUserData = useCallback(async () => {
     if (!clerkUser || !isSignedIn) {
       setUser(null)
       setIsLoading(false)
@@ -33,34 +34,42 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     try {
-      const userData = await apiClient.get<User>(`/auth/user/${clerkUser.id}`)
-      setUser(userData)
+      // Get auth token from Clerk and set it for API calls
+      const token = await getToken()
+      if (token) {
+        apiClient.defaults.headers.Authorization = `Bearer ${token}`
+      }
+
+      const response = await apiClient.get(`/auth/profile`)
+      setUser(response.data)
     } catch (error) {
       console.error('Failed to fetch user data:', error)
       // If user doesn't exist in backend, create them
-      if (error instanceof Error && error.message.includes('404')) {
-        try {
-          const newUser = await apiClient.post<User>('/auth/register', {
-            clerkId: clerkUser.id,
-            email: clerkUser.emailAddresses[0]?.emailAddress,
-            firstName: clerkUser.firstName,
-            lastName: clerkUser.lastName,
-            role: 'customer' // Default role
-          })
-          setUser(newUser)
-          toast.success('Account created successfully!')
-        } catch (createError) {
-          console.error('Failed to create user:', createError)
-          toast.error('Failed to create account. Please try again.')
+      try {
+        const token = await getToken()
+        if (token) {
+          apiClient.defaults.headers.Authorization = `Bearer ${token}`
         }
+        
+        const newUserResponse = await apiClient.post('/auth/sync', {
+          clerkId: clerkUser.id,
+          email: clerkUser.emailAddresses[0]?.emailAddress,
+          firstName: clerkUser.firstName,
+          lastName: clerkUser.lastName,
+          role: 'customer' // Default role
+        })
+        setUser(newUserResponse.data)
+        toast.success('Account created successfully!')
+      } catch (createError) {
+        console.error('Failed to create user:', createError)
+        toast.error('Failed to create account. Please try again.')
       }
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [clerkUser, isSignedIn, getToken])
 
   const refreshUser = async () => {
-    if (!clerkUser) return
     setIsLoading(true)
     await fetchUserData()
   }
@@ -69,8 +78,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (!user) return
     
     try {
-      const updatedUser = await apiClient.patch<User>(`/auth/user/${user.id}/role`, { role })
-      setUser(updatedUser)
+      const token = await getToken()
+      if (token) {
+        apiClient.defaults.headers.Authorization = `Bearer ${token}`
+      }
+      
+      const response = await apiClient.patch(`/auth/user/${user.id}/role`, { role })
+      setUser(response.data)
       toast.success('User role updated successfully!')
     } catch (error) {
       console.error('Failed to update user role:', error)
@@ -88,12 +102,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (isLoaded) {
       fetchUserData()
     }
-  }, [clerkUser, isLoaded, isSignedIn])
+  }, [isLoaded, fetchUserData])
 
   const value: AuthContextType = {
     user,
     isLoading,
-    isSignedIn: isSignedIn && !!user,
+    isSignedIn: Boolean(isSignedIn && user),
     role: user?.role || null,
     hasRole,
     refreshUser,

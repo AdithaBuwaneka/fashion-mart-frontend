@@ -4,6 +4,7 @@
 
 import { useState } from 'react'
 import { ProtectedRoute } from '@/components/shared/protected-route'
+import { ErrorBoundary } from '@/components/shared/error-boundary'
 import { Navbar } from '@/components/layout/navbar'
 import { Sidebar } from '@/components/layout/sidebar'
 import { Footer } from '@/components/layout/footer'
@@ -18,24 +19,28 @@ export default function DashboardLayout({
 
   return (
     <ProtectedRoute requireAuth>
-      <div className="min-h-screen bg-background flex flex-col">
-        <Navbar onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
-        
-        <div className="flex flex-1 pt-16">
-          <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      <ErrorBoundary>
+        <div className="min-h-screen bg-background flex flex-col">
+          <Navbar onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
           
-          <main className="flex-1 lg:ml-64">
-            <div className="container-padding section-spacing">
-              <Breadcrumb />
-              <div className="fade-in">
-                {children}
+          <div className="flex flex-1 pt-16">
+            <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+            
+            <main className="flex-1 lg:ml-64">
+              <div className="container-padding section-spacing">
+                <ErrorBoundary>
+                  <Breadcrumb />
+                  <div className="fade-in">
+                    {children}
+                  </div>
+                </ErrorBoundary>
               </div>
-            </div>
-          </main>
+            </main>
+          </div>
+          
+          <Footer />
         </div>
-        
-        <Footer />
-      </div>
+      </ErrorBoundary>
     </ProtectedRoute>
   )
 }

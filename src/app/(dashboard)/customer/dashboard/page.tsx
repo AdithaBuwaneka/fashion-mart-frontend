@@ -7,12 +7,10 @@ import { Badge } from '@/components/ui/badge'
 import { 
   ShoppingBag, 
   Package, 
-  Truck, 
   Heart,
   Star,
   ArrowRight,
-  Clock,
-  CheckCircle
+  Clock
 } from 'lucide-react'
 import { RoleGuard } from '@/components/shared/role-guard'
 import Link from 'next/link'

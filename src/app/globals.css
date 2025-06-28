@@ -1,4 +1,4 @@
-//src/app/globals.css
+/* src/app/globals.css */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -140,11 +140,23 @@
 
   /* Layout utilities */
   .container-padding {
-    @apply px-4 md:px-6 lg:px-8;
+    @apply px-4 sm:px-6 lg:px-8;
   }
 
   .section-spacing {
-    @apply py-8 md:py-12 lg:py-16;
+    @apply py-8 lg:py-12;
+  }
+
+  .card-shadow {
+    box-shadow: 
+      0 1px 3px 0 rgba(0, 0, 0, 0.1),
+      0 1px 2px -1px rgba(0, 0, 0, 0.1);
+  }
+
+  .card-shadow-lg {
+    box-shadow: 
+      0 10px 15px -3px rgba(0, 0, 0, 0.1),
+      0 4px 6px -4px rgba(0, 0, 0, 0.1);
   }
 
   /* Animation utilities */

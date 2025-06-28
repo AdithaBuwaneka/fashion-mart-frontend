@@ -2,9 +2,8 @@
 'use client'
 
 import { useState } from 'react'
-import { Menu, Search, Bell, Settings, LogOut, User, ShoppingBag } from 'lucide-react'
+import { Menu, Search, Settings, LogOut, User, ShoppingBag } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { 
   DropdownMenu, 
@@ -20,6 +19,7 @@ import { SearchBar } from '@/components/shared/search-bar'
 import { useAuth } from '@/lib/hooks/use-auth'
 import { useClerk } from '@clerk/nextjs'
 import { useRouter } from 'next/navigation'
+import { APP_CONFIG } from '@/lib/constants'
 import Link from 'next/link'
 
 interface NavbarProps {
@@ -43,7 +43,7 @@ export function Navbar({ onToggleSidebar }: NavbarProps) {
       customer: 'Customer',
       designer: 'Designer',
       staff: 'Staff Member',
-      inventory_manager: 'Inventory Manager'
+      inventory: 'Inventory Manager'
     }
     return roleNames[userRole] || userRole
   }
@@ -68,7 +68,7 @@ export function Navbar({ onToggleSidebar }: NavbarProps) {
               <Link href="/" className="flex items-center">
                 <ShoppingBag className="h-8 w-8 text-primary mr-2" />
                 <span className="self-center text-xl font-bold sm:text-2xl whitespace-nowrap text-foreground">
-                  Fashion Mart
+                  {APP_CONFIG.name}
                 </span>
               </Link>
             </div>

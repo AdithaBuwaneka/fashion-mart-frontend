@@ -2,14 +2,24 @@
 import { AlertTriangle, Home, ArrowLeft } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { UserRole } from '@/lib/types/auth'
-import { getUserRoleDisplayName } from '@/lib/utils/auth-utils'
+import { UserRole } from '@/lib/types'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/hooks/use-auth'
 
 interface UnauthorizedAccessProps {
-  userRole: UserRole
+  userRole: UserRole | null
   requiredRoles: UserRole[]
+}
+
+const getUserRoleDisplayName = (role: UserRole): string => {
+  const roleNames: Record<UserRole, string> = {
+    admin: 'Administrator',
+    customer: 'Customer',
+    designer: 'Designer',
+    staff: 'Staff',
+    inventory: 'Inventory Manager'
+  }
+  return roleNames[role] || role
 }
 
 export function UnauthorizedAccess({ userRole, requiredRoles }: UnauthorizedAccessProps) {
@@ -25,13 +35,13 @@ export function UnauthorizedAccess({ userRole, requiredRoles }: UnauthorizedAcce
           </div>
           <CardTitle className="text-xl">Access Denied</CardTitle>
           <CardDescription>
-            You don't have permission to access this page
+            You don&apos;t have permission to access this page
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="bg-muted p-4 rounded-lg">
             <p className="text-sm text-muted-foreground mb-2">
-              <strong>Your Role:</strong> {getUserRoleDisplayName(userRole)}
+              <strong>Your Role:</strong> {userRole ? getUserRoleDisplayName(userRole) : 'Unknown'}
             </p>
             <p className="text-sm text-muted-foreground">
               <strong>Required Roles:</strong>{' '}

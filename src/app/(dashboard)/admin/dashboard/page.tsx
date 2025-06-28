@@ -12,7 +12,8 @@ import {
   DollarSign,
   Package,
   UserCheck,
-  FileText
+  FileText,
+  Palette
 } from 'lucide-react'
 import { RoleGuard } from '@/components/shared/role-guard'
 
@@ -36,7 +37,7 @@ export default function AdminDashboard() {
           <div>
             <h1 className="text-3xl font-bold text-foreground">Admin Dashboard</h1>
             <p className="text-muted-foreground mt-1">
-              Welcome back! Here's what's happening at Fashion Mart.
+              Welcome back! Here&apos;s what&apos;s happening at Fashion Mart.
             </p>
           </div>
           <div className="flex items-center space-x-2 mt-4 md:mt-0">
