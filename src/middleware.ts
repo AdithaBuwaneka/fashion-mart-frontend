@@ -15,7 +15,9 @@ const isPublicRoute = createRouteMatcher([
   '/sign-up(.*)',
   '/api/webhooks(.*)',
   '/unauthorized',
-  '/api/public(.*)'
+  '/api/public(.*)',
+  '/debug(.*)',
+  '/auth-test'
 ]);
 
 // Authentication pages
@@ -33,30 +35,6 @@ const isProtectedApiRoute = createRouteMatcher([
   '/api/inventory(.*)'
 ]);
 
-// Role-based route patterns
-const roleRoutePatterns: Record<UserRole, RegExp[]> = {
-  admin: [
-    /^\/admin(\/.*)?$/,
-    /^\/api\/admin(\/.*)?$/
-  ],
-  customer: [
-    /^\/customer(\/.*)?$/,
-    /^\/api\/customer(\/.*)?$/
-  ],
-  designer: [
-    /^\/designer(\/.*)?$/,
-    /^\/api\/designer(\/.*)?$/
-  ],
-  staff: [
-    /^\/staff(\/.*)?$/,
-    /^\/api\/staff(\/.*)?$/
-  ],
-  inventory_manager: [
-    /^\/inventory(\/.*)?$/,
-    /^\/api\/inventory(\/.*)?$/
-  ]
-};
-
 // Get user role from user metadata
 async function getUserRole(auth: unknown): Promise<UserRole | null> {
   try {
@@ -66,24 +44,6 @@ async function getUserRole(auth: unknown): Promise<UserRole | null> {
   } catch {
     return null;
   }
-}
-
-// Check if user has access to route based on role
-function hasRouteAccess(role: UserRole, pathname: string): boolean {
-  const patterns = roleRoutePatterns[role];
-  return patterns.some(pattern => pattern.test(pathname));
-}
-
-// Get redirect URL based on user role
-function getRoleBasedRedirect(role: UserRole): string {
-  const redirectMap: Record<UserRole, string> = {
-    admin: '/admin/dashboard',
-    customer: '/customer/dashboard',
-    designer: '/designer/dashboard',
-    staff: '/staff/dashboard',
-    inventory_manager: '/inventory/dashboard'
-  };
-  return redirectMap[role] || '/dashboard';
 }
 
 export default clerkMiddleware(async (auth, req: NextRequest) => {
@@ -112,36 +72,30 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
 
   // Redirect authenticated users away from auth pages
   if (isAuthRoute(req)) {
-    const userRole = await getUserRole(auth);
-    if (userRole) {
-      return NextResponse.redirect(new URL(getRoleBasedRedirect(userRole), req.url));
-    }
     return NextResponse.redirect(new URL('/dashboard', req.url));
   }
 
   // Enhanced protection for dashboard routes
   const userRole = await getUserRole(auth);
   
-  if (!userRole) {
-    return NextResponse.redirect(new URL('/unauthorized', req.url));
-  }
-
-  // Check role-based access for protected routes
+  // For dashboard routes, only check if user is authenticated
+  // Let component-level RoleGuard handle role-specific protection
   if (pathname.startsWith('/admin') || 
       pathname.startsWith('/customer') || 
       pathname.startsWith('/designer') || 
       pathname.startsWith('/staff') || 
       pathname.startsWith('/inventory')) {
     
-    if (!hasRouteAccess(userRole, pathname)) {
-      // Redirect to user's appropriate dashboard instead of unauthorized
-      return NextResponse.redirect(new URL(getRoleBasedRedirect(userRole), req.url));
-    }
+    // Skip role checking for dashboard routes - let components handle it
+    // This allows the AuthContext to properly fetch user data from database
+    return NextResponse.next();
   }
 
   // Add user role and ID to headers for downstream components
   const response = NextResponse.next();
-  response.headers.set('x-user-role', userRole);
+  if (userRole) {
+    response.headers.set('x-user-role', userRole);
+  }
   response.headers.set('x-user-id', userId);
 
   return response;

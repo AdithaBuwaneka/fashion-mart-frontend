@@ -78,8 +78,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           const syncData = {
             clerkId: clerkUser.id,
             email: primaryEmail,
-            firstName: clerkUser.firstName || '',
-            lastName: clerkUser.lastName || '',
+            firstName: clerkUser.firstName || null,
+            lastName: clerkUser.lastName || null,
             role: 'customer' // Default role
           }
 
@@ -100,7 +100,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             })
             
             // Show specific error message based on status code
-            if (createError.response?.status === 400) {
+            if (createError.response?.status === 409) {
+              // Conflict - user already exists, this should be handled by backend now
+              console.log('User already exists, trying to fetch profile again...')
+              // Try to fetch the profile again since user should exist now
+              try {
+                const profileResponse = await apiClient.get(`/auth/profile`)
+                setUser(profileResponse.data.data)
+                toast.success('Account synchronized successfully!')
+                return
+              } catch (profileError) {
+                console.error('Failed to fetch profile after sync conflict:', profileError)
+                toast.error('Account exists but failed to sync. Please try refreshing the page.')
+              }
+            } else if (createError.response?.status === 400) {
               toast.error(createError.response.data?.message || 'Invalid user data')
             } else if (createError.response?.status === 500) {
               toast.error('Server error. Please try again in a moment.')
