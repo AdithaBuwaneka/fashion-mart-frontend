@@ -1,8 +1,12 @@
-// next.config.js
-/** @type {import('next').NextConfig} */
-const nextConfig = {
-  experimental: {
-    appDir: true,
+// next.config.ts
+import type { NextConfig } from 'next'
+
+const nextConfig: NextConfig = {
+  typescript: {
+    ignoreBuildErrors: false,
+  },
+  eslint: {
+    ignoreDuringBuilds: false,
   },
   images: {
     domains: [
@@ -16,11 +20,32 @@ const nextConfig = {
         protocol: 'https',
         hostname: '**',
       },
+      {
+        protocol: 'http',
+        hostname: 'localhost',
+        port: '5000',
+      },
     ],
   },
   env: {
     CUSTOM_KEY: process.env.CUSTOM_KEY,
   },
+  // Optimize for production
+  swcMinify: true,
+  poweredByHeader: false,
+  reactStrictMode: true,
+  
+  // File uploads configuration
+  experimental: {
+    serverComponentsExternalPackages: ['sharp'],
+  },
+  
+  // API routes configuration
+  api: {
+    bodyParser: {
+      sizeLimit: '10mb',
+    },
+  },
 }
 
-module.exports = nextConfig
+export default nextConfig

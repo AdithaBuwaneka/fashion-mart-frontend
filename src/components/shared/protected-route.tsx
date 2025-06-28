@@ -4,8 +4,7 @@
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/hooks/use-auth'
-import { UserRole } from '@/lib/types/auth'
-import { canAccessRoute } from '@/lib/utils/auth-utils'
+import { UserRole } from '@/lib/types'
 import { LoadingScreen } from '@/components/shared/loading-screen'
 import { UnauthorizedAccess } from '@/components/shared/unauthorized-access'
 
@@ -22,7 +21,7 @@ export function ProtectedRoute({
   requireAuth = true,
   redirectTo 
 }: ProtectedRouteProps) {
-  const { user, isLoading, isSignedIn, role } = useAuth()
+  const { isLoading, isSignedIn, role } = useAuth()
   const router = useRouter()
 
   useEffect(() => {
