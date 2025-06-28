@@ -100,5 +100,5 @@ export function useIsStaff() {
 }
 
 export function useIsInventory() {
-  return useIsRole('inventory')
+  return useIsRole('inventory_manager')
 }

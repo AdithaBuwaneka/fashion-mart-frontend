@@ -6,7 +6,7 @@ import { RoleGuard } from '@/components/shared/role-guard'
 
 export default function InventoryAlertsPage() {
   return (
-    <RoleGuard allowedRoles={['inventory']}>
+    <RoleGuard allowedRoles={['inventory_manager']}>
       <div className="space-y-6">
         {/* Page Header */}
         <div>

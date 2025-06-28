@@ -49,7 +49,7 @@ const criticalAlerts = [
 
 export default function InventoryDashboardPage() {
   return (
-    <RoleGuard allowedRoles={['inventory']}>
+    <RoleGuard allowedRoles={['inventory_manager']}>
       <div className="space-y-6">
         {/* Page Header */}
         <div className="flex justify-between items-center">

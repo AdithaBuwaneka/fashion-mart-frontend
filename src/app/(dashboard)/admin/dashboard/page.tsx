@@ -16,6 +16,7 @@ import {
   Palette
 } from 'lucide-react'
 import { RoleGuard } from '@/components/shared/role-guard'
+import { UserRoleManager } from '@/components/admin/user-role-manager'
 
 export default function AdminDashboard() {
   // Mock data - in real app, this would come from your API
@@ -156,6 +157,9 @@ export default function AdminDashboard() {
             </CardContent>
           </Card>
         </div>
+
+        {/* User Role Management Section */}
+        <UserRoleManager />
       </div>
     </RoleGuard>
   )

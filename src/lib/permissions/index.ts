@@ -104,7 +104,7 @@ export const rolePermissions: Record<UserRole, Permission[]> = {
     'manage_profile'
   ],
   
-  inventory: [
+  inventory_manager: [
     'browse_products',
     'manage_inventory',
     'approve_designs',

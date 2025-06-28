@@ -68,7 +68,7 @@ export const USER_ROLES = {
   CUSTOMER: 'customer',
   DESIGNER: 'designer',
   STAFF: 'staff',
-  INVENTORY: 'inventory',
+  INVENTORY: 'inventory_manager',
 } as const;
 
 export const ORDER_STATUSES = {
@@ -112,7 +112,7 @@ export const NOTIFICATION_TYPES = {
 
 export const REPORT_TYPES = {
   SALES: 'sales',
-  INVENTORY: 'inventory',
+  INVENTORY_MANAGER: 'inventory',
   CUSTOMERS: 'customers',
   RETURNS: 'returns',
   DESIGNS: 'designs',

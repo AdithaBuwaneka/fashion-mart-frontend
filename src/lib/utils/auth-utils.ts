@@ -8,7 +8,7 @@ export const getUserRoleDisplayName = (role: UserRole): string => {
     customer: 'Customer',
     designer: 'Designer',
     staff: 'Staff Member',
-    inventory: 'Inventory Manager'
+    inventory_manager: 'Inventory Manager'
   }
   return roleNames[role] || role
 }
@@ -19,7 +19,7 @@ export const getDashboardRoute = (role: UserRole): string => {
     customer: '/customer/dashboard',
     designer: '/designer/dashboard', 
     staff: '/staff/dashboard',
-    inventory: '/inventory/dashboard'
+    inventory_manager: '/inventory/dashboard'
   }
   return routes[role] || '/dashboard'
 }
@@ -30,7 +30,7 @@ export const getUserRoleDescription = (role: UserRole): string => {
     customer: 'Browse products, place orders, and manage returns',
     designer: 'Upload designs, collaborate, and track royalties',
     staff: 'Process orders, handle returns, and customer support',
-    inventory: 'Manage stock, approve designs, and monitor inventory'
+    inventory_manager: 'Manage stock, approve designs, and monitor inventory'
   }
   return descriptions[role] || ''
 }
@@ -71,7 +71,7 @@ export const getRolePermissions = (role: UserRole): string[] => {
       'view_customers',
       'manage_profile'
     ],
-    inventory: [
+    inventory_manager: [
       'manage_inventory',
       'approve_designs',
       'view_stock_reports',
@@ -98,7 +98,7 @@ export const canAccessRoute = (userRole: UserRole, route: string): boolean => {
 export const getRoleHierarchy = (): Record<UserRole, number> => {
   return {
     admin: 5,
-    inventory: 4,
+    inventory_manager: 4,
     staff: 3,
     designer: 2,
     customer: 1
@@ -113,7 +113,7 @@ export const hasHigherRole = (userRole: UserRole, compareRole: UserRole): boolea
 export const getRoleColor = (role: UserRole): string => {
   const colors: Record<UserRole, string> = {
     admin: 'bg-red-500',
-    inventory: 'bg-purple-500',
+    inventory_manager: 'bg-purple-500',
     staff: 'bg-blue-500',
     designer: 'bg-green-500',
     customer: 'bg-gray-500'
@@ -124,7 +124,7 @@ export const getRoleColor = (role: UserRole): string => {
 export const getRoleIcon = (role: UserRole): string => {
   const icons: Record<UserRole, string> = {
     admin: 'Crown',
-    inventory: 'Package',
+    inventory_manager: 'Package',
     staff: 'Users',
     designer: 'Palette',
     customer: 'ShoppingBag'

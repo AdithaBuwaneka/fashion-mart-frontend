@@ -9,7 +9,7 @@ import { RoleGuard } from '@/components/shared/role-guard'
 
 export default function RejectedDesignsPage() {
   return (
-    <RoleGuard allowedRoles={['inventory']}>
+    <RoleGuard allowedRoles={['inventory_manager']}>
       <div className="space-y-6">
         {/* Page Header */}
         <div className="flex justify-between items-center">

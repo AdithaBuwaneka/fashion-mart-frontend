@@ -78,7 +78,7 @@ export default function ProductDetailPage() {
   }
 
   return (
-    <RoleGuard allowedRoles={['inventory']}>
+    <RoleGuard allowedRoles={['inventory_manager']}>
       <div className="space-y-6">
         {/* Header */}
         <div className="flex items-center gap-4">

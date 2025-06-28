@@ -198,7 +198,7 @@ export const getMenuItems = (role: UserRole): MenuItem[] => {
         icon: TrendingUp,
       },
     ],
-    inventory: [
+    inventory_manager: [
       {
         title: 'Dashboard',
         href: '/inventory/dashboard',

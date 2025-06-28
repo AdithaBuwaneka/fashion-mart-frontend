@@ -148,7 +148,7 @@ export function RoleSelectionForm() {
       features: ['Process orders', 'Handle returns', 'Customer support', 'Order tracking']
     },
     {
-      id: 'inventory',
+      id: 'inventory_manager',
       title: 'Inventory Manager',
       description: 'Manage stock and approve designs',
       icon: Package,
