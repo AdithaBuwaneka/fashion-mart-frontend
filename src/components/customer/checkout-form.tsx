@@ -18,12 +18,8 @@ interface CheckoutFormProps {
   onStepChange: (step: 'shipping' | 'payment' | 'review') => void;
   shippingAddress: Address | null;
   onShippingAddressChange: (address: Address) => void;
-  billingAddress: Address | null;
-  onBillingAddressChange: (address: Address) => void;
   paymentMethod: 'card' | 'bank_transfer' | 'cash_on_delivery';
   onPaymentMethodChange: (method: 'card' | 'bank_transfer' | 'cash_on_delivery') => void;
-  sameAsShipping: boolean;
-  onSameAsShippingChange: (same: boolean) => void;
   cartItems: CartItem[];
   onPlaceOrder: () => void;
 }
@@ -33,12 +29,8 @@ export function CheckoutForm({
   onStepChange,
   shippingAddress,
   onShippingAddressChange,
-  billingAddress,
-  onBillingAddressChange,
   paymentMethod,
   onPaymentMethodChange,
-  sameAsShipping,
-  onSameAsShippingChange,
   cartItems,
   onPlaceOrder
 }: CheckoutFormProps) {

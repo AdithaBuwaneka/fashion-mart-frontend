@@ -6,14 +6,16 @@ import { Product } from '@/lib/types';
 import { ProductDetails } from '@/components/customer/product-details';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
+import { use } from 'react';
 
 interface ProductPageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 export default function ProductPage({ params }: ProductPageProps) {
+  const { id } = use(params);
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -21,7 +23,7 @@ export default function ProductPage({ params }: ProductPageProps) {
   // Mock data - TODO: Replace with API call
   useEffect(() => {
     const mockProduct: Product = {
-      id: params.id,
+      id: id,
       name: 'Elegant Summer Dress',
       description: 'A beautiful flowing dress perfect for summer occasions. Made from premium cotton blend with a comfortable fit that flatters all body types. Features include adjustable straps, side pockets, and a flattering A-line silhouette.',
       price: 89.99,
@@ -48,9 +50,9 @@ export default function ProductPage({ params }: ProductPageProps) {
       createdAt: '2025-06-01T00:00:00Z',
       updatedAt: '2025-06-25T00:00:00Z',
       stock: [
-        { id: '1', productId: params.id, product: {} as Product, size: 'S', color: 'Blue', quantity: 10, minThreshold: 2, lastUpdated: '2025-06-25T00:00:00Z' },
-        { id: '2', productId: params.id, product: {} as Product, size: 'M', color: 'Blue', quantity: 15, minThreshold: 2, lastUpdated: '2025-06-25T00:00:00Z' },
-        { id: '3', productId: params.id, product: {} as Product, size: 'L', color: 'Pink', quantity: 8, minThreshold: 2, lastUpdated: '2025-06-25T00:00:00Z' }
+        { id: '1', productId: id, product: {} as Product, size: 'S', color: 'Blue', quantity: 10, minThreshold: 2, lastUpdated: '2025-06-25T00:00:00Z' },
+        { id: '2', productId: id, product: {} as Product, size: 'M', color: 'Blue', quantity: 15, minThreshold: 2, lastUpdated: '2025-06-25T00:00:00Z' },
+        { id: '3', productId: id, product: {} as Product, size: 'L', color: 'Pink', quantity: 8, minThreshold: 2, lastUpdated: '2025-06-25T00:00:00Z' }
       ],
       design: {
         id: '1',
@@ -80,7 +82,7 @@ export default function ProductPage({ params }: ProductPageProps) {
     };
 
     setTimeout(() => {
-      if (params.id) {
+      if (id) {
         setProduct(mockProduct);
         setLoading(false);
       } else {
@@ -88,7 +90,7 @@ export default function ProductPage({ params }: ProductPageProps) {
         setLoading(false);
       }
     }, 1000);
-  }, [params.id]);
+  }, [id]);
 
   if (loading) {
     return (

@@ -2,7 +2,7 @@
 'use client'
 
 import { createContext, useContext, useState, ReactNode } from 'react'
-import { Notification, NotificationType } from '@/lib/types/notification'
+import { Notification } from '@/lib/types/notification'
 
 interface NotificationContextType {
   notifications: Notification[]

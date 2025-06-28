@@ -1,4 +1,6 @@
 // src/lib/types/design.ts
+import type { User } from './user';
+
 export interface Design {
   id: string;
   designerId: string;

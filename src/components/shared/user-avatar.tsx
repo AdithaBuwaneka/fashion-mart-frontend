@@ -40,7 +40,7 @@ export function UserAvatar({ size = 'md', className, showName = false }: UserAva
       <Avatar className={`${sizeClasses[size]} ${className}`}>
         <AvatarImage src={user.imageUrl} alt={user.fullName || 'User'} />
         <AvatarFallback>
-          {getInitials(user.firstName, user.lastName)}
+          {getInitials(user.firstName ?? undefined, user.lastName ?? undefined)}
         </AvatarFallback>
       </Avatar>
       {showName && (

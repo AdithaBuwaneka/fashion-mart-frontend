@@ -1,14 +1,12 @@
 // src/components/shared/notification-bell.tsx
 'use client'
 
-import { useState } from 'react'
-import { Bell, Check, X, Trash2 } from 'lucide-react'
+import { Bell, Check, Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { 
   DropdownMenu, 
   DropdownMenuContent, 
-  DropdownMenuHeader,
   DropdownMenuTrigger 
 } from '@/components/ui/dropdown-menu'
 import { Separator } from '@/components/ui/separator'
@@ -24,7 +22,7 @@ export function NotificationBell() {
     removeNotification 
   } = useNotifications()
 
-  const getNotificationIcon = (type: string) => {
+  const getNotificationIcon = () => {
     // Add notification type icons based on your notification types
     return '🔔'
   }
@@ -96,7 +94,7 @@ export function NotificationBell() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start space-x-3">
                       <span className={`text-sm ${getNotificationColor(notification.type)}`}>
-                        {getNotificationIcon(notification.type)}
+                        {getNotificationIcon()}
                       </span>
                       <div className="flex-1 min-w-0">
                         <p className={`text-sm ${!notification.isRead ? 'font-semibold' : ''}`}>
