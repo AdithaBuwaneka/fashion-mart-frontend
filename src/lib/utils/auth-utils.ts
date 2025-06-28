@@ -1,5 +1,6 @@
 // src/lib/utils/auth-utils.ts
 import { UserRole } from '@/lib/types'
+import { Permission, hasPermission as checkPermission, canAccessRoute as checkRouteAccess } from '@/lib/permissions'
 
 export const getUserRoleDisplayName = (role: UserRole): string => {
   const roleNames: Record<UserRole, string> = {
@@ -34,8 +35,10 @@ export const getUserRoleDescription = (role: UserRole): string => {
   return descriptions[role] || ''
 }
 
+// Legacy function - kept for backward compatibility but now uses new permission system
 export const getRolePermissions = (role: UserRole): string[] => {
-  const permissions: Record<UserRole, string[]> = {
+  // Map old permission strings to new Permission types for backward compatibility
+  const legacyPermissions: Record<UserRole, string[]> = {
     admin: [
       'manage_users',
       'view_analytics',
@@ -78,28 +81,53 @@ export const getRolePermissions = (role: UserRole): string[] => {
     ]
   }
   
-  return permissions[role] || []
+  return legacyPermissions[role] || []
 }
 
-export const hasPermission = (userRole: UserRole, permission: string): boolean => {
-  const userPermissions = getRolePermissions(userRole)
-  return userPermissions.includes(permission)
+// Enhanced permission checking using new permission system
+export const hasPermission = (userRole: UserRole, permission: string | Permission): boolean => {
+  return checkPermission(userRole, permission as Permission)
 }
 
+// Enhanced route access checking using new permission system
 export const canAccessRoute = (userRole: UserRole, route: string): boolean => {
-  const routePermissions: Record<string, UserRole[]> = {
-    '/admin': ['admin'],
-    '/customer': ['customer'],
-    '/designer': ['designer'],
-    '/staff': ['staff'],
-    '/inventory': ['inventory']
-  }
+  return checkRouteAccess(userRole, route)
+}
 
-  for (const [routePrefix, allowedRoles] of Object.entries(routePermissions)) {
-    if (route.startsWith(routePrefix)) {
-      return allowedRoles.includes(userRole)
-    }
+// New utility functions for enhanced role management
+export const getRoleHierarchy = (): Record<UserRole, number> => {
+  return {
+    admin: 5,
+    inventory: 4,
+    staff: 3,
+    designer: 2,
+    customer: 1
   }
+}
 
-  return false
+export const hasHigherRole = (userRole: UserRole, compareRole: UserRole): boolean => {
+  const hierarchy = getRoleHierarchy()
+  return hierarchy[userRole] > hierarchy[compareRole]
+}
+
+export const getRoleColor = (role: UserRole): string => {
+  const colors: Record<UserRole, string> = {
+    admin: 'bg-red-500',
+    inventory: 'bg-purple-500',
+    staff: 'bg-blue-500',
+    designer: 'bg-green-500',
+    customer: 'bg-gray-500'
+  }
+  return colors[role] || 'bg-gray-500'
+}
+
+export const getRoleIcon = (role: UserRole): string => {
+  const icons: Record<UserRole, string> = {
+    admin: 'Crown',
+    inventory: 'Package',
+    staff: 'Users',
+    designer: 'Palette',
+    customer: 'ShoppingBag'
+  }
+  return icons[role] || 'User'
 }
