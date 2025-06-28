@@ -1,5 +1,8 @@
 'use client';
 
+// Force dynamic rendering to prevent build-time prerendering issues
+export const dynamic = 'force-dynamic'
+
 import { useState, useEffect, useMemo } from 'react';
 import { Product, ProductFilters, Category } from '@/lib/types';
 import { ProductGrid } from '@/components/customer/product-grid';

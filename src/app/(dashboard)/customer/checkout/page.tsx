@@ -24,9 +24,7 @@ export default function CheckoutPage() {
   const [loading, setLoading] = useState(true);
   const [step, setStep] = useState<'shipping' | 'payment' | 'review'>('shipping');
   const [shippingAddress, setShippingAddress] = useState<Address | null>(null);
-  const [billingAddress, setBillingAddress] = useState<Address | null>(null);
   const [paymentMethod, setPaymentMethod] = useState<'card' | 'bank_transfer' | 'cash_on_delivery'>('card');
-  const [sameAsShipping, setSameAsShipping] = useState(true);
 
   // Mock cart data - TODO: Get from context or API
   useEffect(() => {
@@ -72,7 +70,7 @@ export default function CheckoutPage() {
     console.log('Placing order...', {
       items: cartItems,
       shippingAddress,
-      billingAddress: sameAsShipping ? shippingAddress : billingAddress,
+      billingAddress: shippingAddress,
       paymentMethod,
       total
     });
@@ -143,12 +141,8 @@ export default function CheckoutPage() {
               onStepChange={setStep}
               shippingAddress={shippingAddress}
               onShippingAddressChange={setShippingAddress}
-              billingAddress={billingAddress}
-              onBillingAddressChange={setBillingAddress}
               paymentMethod={paymentMethod}
               onPaymentMethodChange={setPaymentMethod}
-              sameAsShipping={sameAsShipping}
-              onSameAsShippingChange={setSameAsShipping}
               cartItems={cartItems}
               onPlaceOrder={handlePlaceOrder}
             />

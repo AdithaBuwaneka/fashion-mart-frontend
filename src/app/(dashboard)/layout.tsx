@@ -1,6 +1,8 @@
-
 // src/app/(dashboard)/layout.tsx (Updated)
 'use client'
+
+// Force dynamic rendering to prevent build-time prerendering issues
+export const dynamic = 'force-dynamic'
 
 import { useState } from 'react'
 import { ProtectedRoute } from '@/components/shared/protected-route'

@@ -57,11 +57,11 @@ const roleRoutePatterns: Record<UserRole, RegExp[]> = {
 };
 
 // Get user role from user metadata
-async function getUserRole(auth: any): Promise<UserRole | null> {
+async function getUserRole(auth: unknown): Promise<UserRole | null> {
   try {
-    const { sessionClaims } = await auth();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return (sessionClaims as any)?.metadata?.role || null;
+    const authResult = await (auth as () => Promise<{ sessionClaims?: Record<string, unknown> }>)();
+    const { sessionClaims } = authResult;
+    return (sessionClaims as { metadata?: { role?: UserRole } })?.metadata?.role || null;
   } catch {
     return null;
   }

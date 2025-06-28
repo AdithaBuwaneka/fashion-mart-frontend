@@ -1,4 +1,8 @@
 // src/lib/types/order.ts
+import type { Payment } from './payment';
+import type { Product } from './product';
+import type { User } from './user';
+
 export interface Order {
   id: string;
   customerId: string;

@@ -5,7 +5,7 @@ export interface Notification {
   type: NotificationType;
   title: string;
   message: string;
-  data?: any;
+  data?: Record<string, unknown>;
   isRead: boolean;
   createdAt: string;
 }

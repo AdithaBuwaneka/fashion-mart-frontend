@@ -31,21 +31,11 @@ const nextConfig: NextConfig = {
     CUSTOM_KEY: process.env.CUSTOM_KEY,
   },
   // Optimize for production
-  swcMinify: true,
   poweredByHeader: false,
   reactStrictMode: true,
   
   // File uploads configuration
-  experimental: {
-    serverComponentsExternalPackages: ['sharp'],
-  },
-  
-  // API routes configuration
-  api: {
-    bodyParser: {
-      sizeLimit: '10mb',
-    },
-  },
+  serverExternalPackages: ['sharp'],
 }
 
 export default nextConfig

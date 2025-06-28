@@ -18,17 +18,19 @@ import {
 } from 'lucide-react'
 import { RoleGuard } from '@/components/shared/role-guard'
 import Link from 'next/link'
+import { use } from 'react'
 
 interface OrderDetailsPageProps {
-  params: {
+  params: Promise<{
     orderId: string
-  }
+  }>
 }
 
 export default function OrderDetailsPage({ params }: OrderDetailsPageProps) {
-  // Mock data - would come from API based on params.orderId
+  const { orderId } = use(params);
+  // Mock data - would come from API based on orderId
   const order = {
-    id: params.orderId,
+    id: orderId,
     orderNumber: 'ORD-2024-001',
     customer: {
       id: 'cust-1',
