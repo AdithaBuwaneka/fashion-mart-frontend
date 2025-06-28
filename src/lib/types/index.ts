@@ -314,3 +314,101 @@ export interface SocketEvents {
   'new-notification': (notification: Notification) => void;
   'design-approval': (data: { designId: string; approved: boolean }) => void;
 }
+
+// Staff and Support types
+export interface SupportTicket {
+  id: string;
+  customerId: string;
+  customer: User;
+  subject: string;
+  description: string;
+  status: TicketStatus;
+  priority: TicketPriority;
+  category: TicketCategory;
+  assignedToId?: string;
+  assignedTo?: User;
+  messages: SupportMessage[];
+  createdAt: string;
+  updatedAt: string;
+  resolvedAt?: string;
+}
+
+export type TicketStatus = 'open' | 'in_progress' | 'pending_customer' | 'resolved' | 'closed';
+export type TicketPriority = 'low' | 'medium' | 'high' | 'urgent';
+export type TicketCategory = 'order_issue' | 'payment_problem' | 'product_inquiry' | 'account_issue' | 'technical_support' | 'other';
+
+export interface SupportMessage {
+  id: string;
+  ticketId: string;
+  senderId: string;
+  sender: User;
+  message: string;
+  isStaffReply: boolean;
+  attachments?: string[];
+  createdAt: string;
+}
+
+export interface StaffTask {
+  id: string;
+  title: string;
+  description: string;
+  type: TaskType;
+  priority: TaskPriority;
+  status: TaskStatus;
+  assignedToId: string;
+  assignedTo: User;
+  dueDate?: string;
+  completedAt?: string;
+  createdAt: string;
+  updatedAt: string;
+  metadata?: Record<string, unknown>;
+}
+
+export type TaskType = 'order_processing' | 'customer_support' | 'return_processing' | 'quality_check' | 'inventory_update' | 'other';
+export type TaskPriority = 'low' | 'medium' | 'high' | 'urgent';
+export type TaskStatus = 'pending' | 'in_progress' | 'completed' | 'cancelled';
+
+export interface StaffPerformance {
+  id: string;
+  staffId: string;
+  staff: User;
+  period: string;
+  ordersProcessed: number;
+  averageProcessingTime: number;
+  ticketsResolved: number;
+  customerSatisfactionScore: number;
+  qualityScore: number;
+  createdAt: string;
+}
+
+export interface QualityCheck {
+  id: string;
+  orderId: string;
+  order: Order;
+  checkedById: string;
+  checkedBy: User;
+  status: QualityStatus;
+  issues: QualityIssue[];
+  notes?: string;
+  checkedAt: string;
+}
+
+export type QualityStatus = 'passed' | 'failed' | 'needs_review';
+
+export interface QualityIssue {
+  id: string;
+  type: string;
+  description: string;
+  severity: 'minor' | 'major' | 'critical';
+  resolved: boolean;
+}
+
+// Staff dashboard stats
+export interface StaffStats {
+  pendingOrders: number;
+  activeTickets: number;
+  todayTasks: number;
+  overdueItems: number;
+  averageResponseTime: number;
+  completionRate: number;
+}
