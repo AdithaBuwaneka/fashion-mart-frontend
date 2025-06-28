@@ -114,7 +114,7 @@ export const roleBasedRoutes: Record<UserRole, NavItem[]> = {
       description: 'Daily reports'
     }
   ],
-  inventory: [
+  inventory_manager: [
     {
       title: 'Stock Management',
       href: '/inventory/stock',
@@ -148,7 +148,7 @@ export const getDashboardRoute = (role: UserRole): string => {
     customer: '/customer/dashboard',
     designer: '/designer/dashboard',
     staff: '/staff/dashboard',
-    inventory: '/inventory/dashboard'
+    inventory_manager: '/inventory/dashboard'
   }
   return routes[role] || '/dashboard'
 }
@@ -159,7 +159,7 @@ export const getRoleDisplayName = (role: UserRole): string => {
     customer: 'Customer',
     designer: 'Designer',
     staff: 'Staff Member',
-    inventory: 'Inventory Manager'
+    inventory_manager: 'Inventory Manager'
   }
   return names[role] || role
 }

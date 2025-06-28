@@ -17,7 +17,7 @@ const getUserRoleDisplayName = (role: UserRole): string => {
     customer: 'Customer',
     designer: 'Designer',
     staff: 'Staff',
-    inventory: 'Inventory Manager'
+    inventory_manager: 'Inventory Manager'
   }
   return roleNames[role] || role
 }

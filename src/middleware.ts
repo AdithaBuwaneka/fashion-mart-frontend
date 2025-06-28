@@ -10,6 +10,7 @@ const isPublicRoute = createRouteMatcher([
   '/about',
   '/contact',
   '/products(.*)',
+  '/connection-test',
   '/sign-in(.*)',
   '/sign-up(.*)',
   '/api/webhooks(.*)',
@@ -50,7 +51,7 @@ const roleRoutePatterns: Record<UserRole, RegExp[]> = {
     /^\/staff(\/.*)?$/,
     /^\/api\/staff(\/.*)?$/
   ],
-  inventory: [
+  inventory_manager: [
     /^\/inventory(\/.*)?$/,
     /^\/api\/inventory(\/.*)?$/
   ]
@@ -80,7 +81,7 @@ function getRoleBasedRedirect(role: UserRole): string {
     customer: '/customer/dashboard',
     designer: '/designer/dashboard',
     staff: '/staff/dashboard',
-    inventory: '/inventory/dashboard'
+    inventory_manager: '/inventory/dashboard'
   };
   return redirectMap[role] || '/dashboard';
 }

@@ -93,17 +93,17 @@ export const apiRouteConfigs: ApiRouteConfig[] = [
   // Inventory API routes
   {
     path: '/api/inventory/stock',
-    requiredRole: ['inventory', 'admin'],
+    requiredRole: ['inventory_manager', 'admin'],
     requiredPermissions: ['manage_inventory']
   },
   {
     path: '/api/inventory/designs',
-    requiredRole: ['inventory', 'admin'],
+    requiredRole: ['inventory_manager', 'admin'],
     requiredPermissions: ['approve_designs']
   },
   {
     path: '/api/inventory/reports',
-    requiredRole: ['inventory', 'admin'],
+    requiredRole: ['inventory_manager', 'admin'],
     requiredPermissions: ['generate_inventory_reports']
   }
 ];

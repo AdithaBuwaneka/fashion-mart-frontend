@@ -14,7 +14,7 @@ export interface User {
   address?: Address;
 }
 
-export type UserRole = 'admin' | 'customer' | 'designer' | 'staff' | 'inventory';
+export type UserRole = 'admin' | 'customer' | 'designer' | 'staff' | 'inventory_manager';
 
 export interface Address {
   id?: string;

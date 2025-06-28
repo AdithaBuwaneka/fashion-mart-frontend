@@ -30,8 +30,12 @@ export default function UnauthorizedPage() {
               <p className="text-sm text-muted-foreground mb-2">
                 <strong>Current Role:</strong> {user.role}
               </p>
+              <p className="text-sm text-muted-foreground mb-2">
+                <strong>User ID:</strong> <code className="bg-background px-1 rounded">{user.id}</code>
+              </p>
               <p className="text-sm text-muted-foreground">
                 Contact your administrator if you believe this is an error.
+                Share your User ID above for faster support.
               </p>
             </div>
           )}

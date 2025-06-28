@@ -133,7 +133,7 @@ export function UserManagement() {
         return 'bg-red-100 text-red-800 border-red-200';
       case 'designer':
         return 'bg-purple-100 text-purple-800 border-purple-200';
-      case 'inventory':
+      case 'inventory_manager':
         return 'bg-blue-100 text-blue-800 border-blue-200';
       case 'staff':
         return 'bg-green-100 text-green-800 border-green-200';
@@ -189,7 +189,7 @@ export function UserManagement() {
                 <option value="customer">Customer</option>
                 <option value="designer">Designer</option>
                 <option value="staff">Staff</option>
-                <option value="inventory">Inventory</option>
+                <option value="inventory_manager">Inventory Manager</option>
               </SimpleSelect>
             </div>
             <div className="w-full md:w-48">

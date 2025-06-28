@@ -43,7 +43,7 @@ export const roleComponentRegistry: Record<UserRole, Record<string, LazyComponen
   customer: customerComponents,
   designer: designerComponents,
   staff: staffComponents,
-  inventory: inventoryComponents
+  inventory_manager: inventoryComponents
 };
 
 // Preload components for a specific role

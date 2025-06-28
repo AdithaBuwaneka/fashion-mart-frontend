@@ -11,7 +11,7 @@ export default function InventoryRedirectPage() {
   const router = useRouter()
 
   useEffect(() => {
-    if (!isLoading && user?.role === 'inventory') {
+    if (!isLoading && user?.role === 'inventory_manager') {
       router.replace('/inventory/dashboard')
     }
   }, [isLoading, user, router])

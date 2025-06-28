@@ -11,7 +11,7 @@ export default function InventoryLayout({
   children: React.ReactNode;
 }) {
   return (
-    <RoleGuard allowedRoles={['inventory']}>
+    <RoleGuard allowedRoles={['inventory_manager']}>
       {children}
     </RoleGuard>
   );

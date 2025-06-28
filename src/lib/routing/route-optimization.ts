@@ -11,7 +11,7 @@ export const roleComponentRegistry: Record<UserRole, Record<string, LazyComponen
   customer: {},
   designer: {},
   staff: {},
-  inventory: {}
+  inventory_manager: {}
 };
 
 // Preload components for a specific role
@@ -53,7 +53,7 @@ export const routePreloadStrategies: RoutePreloadMap = {
     customer: ['products', 'orders'],
     designer: ['designs', 'upload'],
     staff: ['orders', 'returns'],
-    inventory: ['stock', 'alerts']
+    inventory_manager: ['stock', 'alerts']
   },
   
   // When user visits main feature, preload related features
@@ -61,7 +61,7 @@ export const routePreloadStrategies: RoutePreloadMap = {
     admin: ['reports'],
     customer: ['returns'],
     staff: ['customers'],
-    inventory: ['stock']
+    inventory_manager: ['stock']
   },
   
   products: {
@@ -71,7 +71,7 @@ export const routePreloadStrategies: RoutePreloadMap = {
   
   designs: {
     designer: ['upload', 'analytics'],
-    inventory: ['stock'],
+    inventory_manager: ['stock'],
     admin: ['reports']
   }
 };

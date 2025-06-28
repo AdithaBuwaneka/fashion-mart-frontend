@@ -1,15 +1,15 @@
-// src/app/(auth)/sign-up/page.tsx
-import { SignUp } from '@clerk/nextjs'
+// src/app/(auth)/sign-in/[[...rest]]/page.tsx
+import { SignIn } from '@clerk/nextjs'
 
-export default function SignUpPage() {
+export default function SignInPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted/20 p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-foreground">Join Fashion Mart</h1>
-          <p className="text-muted-foreground mt-2">Create your account to get started</p>
+          <h1 className="text-3xl font-bold text-foreground">Welcome Back</h1>
+          <p className="text-muted-foreground mt-2">Sign in to your Fashion Mart account</p>
         </div>
-        <SignUp 
+        <SignIn 
           appearance={{
             elements: {
               rootBox: 'w-full',
@@ -27,7 +27,7 @@ export default function SignUpPage() {
             }
           }}
           redirectUrl="/dashboard"
-          signInUrl="/sign-in"
+          signUpUrl="/sign-up"
         />
       </div>
     </div>

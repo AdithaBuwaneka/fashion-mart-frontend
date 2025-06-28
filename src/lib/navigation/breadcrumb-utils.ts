@@ -47,6 +47,7 @@ const formatSegmentLabel = (segment: string): string => {
     'orders': 'Orders',
     'designs': 'Designs',
     'inventory': 'Inventory',
+    'inventory_manager': 'Inventory Manager',
     'reports': 'Reports',
     'analytics': 'Analytics',
     'settings': 'Settings',
