@@ -19,8 +19,7 @@ import {
   Inbox,
   CheckCircle,
   XCircle,
-  AlertTriangle,
-  Eye
+  AlertTriangle
 } from 'lucide-react'
 import { UserRole } from '@/lib/types'
 
@@ -106,25 +105,18 @@ export const getMenuItems = (role: UserRole): MenuItem[] => {
     designer: [
       {
         title: 'Dashboard',
-        href: '/designer/dashboard',
+        href: '/designer',
         icon: Home,
       },
       {
-        title: 'My Designs',
-        href: '/designer/designs',
+        title: 'Portfolio',
+        href: '/designer/portfolio',
         icon: Palette,
-        children: [
-          {
-            title: 'All Designs',
-            href: '/designer/designs',
-            icon: Eye,
-          },
-          {
-            title: 'Upload New',
-            href: '/designer/designs/new',
-            icon: Palette,
-          },
-        ],
+      },
+      {
+        title: 'Upload Design',
+        href: '/designer/upload',
+        icon: Palette,
       },
       {
         title: 'Collaborations',
@@ -145,29 +137,65 @@ export const getMenuItems = (role: UserRole): MenuItem[] => {
     staff: [
       {
         title: 'Dashboard',
-        href: '/staff/dashboard',
+        href: '/staff',
         icon: Home,
       },
       {
-        title: 'Order Queue',
+        title: 'Orders',
         href: '/staff/orders',
         icon: Inbox,
         badge: '12', // Dynamic
-      },
-      {
-        title: 'Returns',
-        href: '/staff/returns',
-        icon: ArrowLeftRight,
-      },
-      {
-        title: 'Customers',
-        href: '/staff/customers',
-        icon: Users,
+        children: [
+          {
+            title: 'Order Queue',
+            href: '/staff/orders',
+            icon: Inbox,
+          },
+          {
+            title: 'Processing',
+            href: '/staff/orders/processing',
+            icon: Package,
+          },
+          {
+            title: 'Shipped',
+            href: '/staff/orders/shipped',
+            icon: Truck,
+          },
+        ],
       },
       {
         title: 'Support',
         href: '/staff/support',
         icon: Bell,
+        badge: '5', // Dynamic
+        children: [
+          {
+            title: 'Tickets',
+            href: '/staff/support',
+            icon: Bell,
+          },
+          {
+            title: 'Chat',
+            href: '/staff/support/chat',
+            icon: Users,
+          },
+        ],
+      },
+      {
+        title: 'Returns',
+        href: '/staff/returns',
+        icon: ArrowLeftRight,
+        badge: '3', // Dynamic
+      },
+      {
+        title: 'Quality Control',
+        href: '/staff/quality',
+        icon: CheckCircle,
+      },
+      {
+        title: 'Performance',
+        href: '/staff/performance',
+        icon: TrendingUp,
       },
     ],
     inventory: [
