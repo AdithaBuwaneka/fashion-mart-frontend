@@ -125,6 +125,27 @@ export const adminApi = {
     return response.data as Report;
   },
 
+  // Generate quarterly report
+  generateQuarterlyReport: async (quarter: number, year: number): Promise<Report> => {
+    const response = await ApiService.post<Report>('/admin/reports/quarterly', {
+      quarter,
+      year,
+    });
+    return response.data as Report;
+  },
+
+  // Create custom report
+  createCustomReport: async (reportData: {
+    name: string;
+    description?: string;
+    filters: Record<string, any>;
+    dataTypes: string[];
+    dateRange: { startDate: string; endDate: string };
+  }): Promise<Report> => {
+    const response = await ApiService.post<Report>('/admin/reports', reportData);
+    return response.data as Report;
+  },
+
   // Delete report
   deleteReport: async (reportId: string): Promise<{ success: boolean; message: string }> => {
     const response = await ApiService.delete<{ success: boolean; message: string }>(`/admin/reports/${reportId}`);
