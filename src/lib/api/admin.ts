@@ -56,8 +56,33 @@ export const adminApi = {
   // Get admin dashboard statistics
   getDashboardStats: async (period?: string): Promise<DashboardStats> => {
     const url = period ? `/admin/dashboard/stats?period=${period}` : '/admin/dashboard/stats';
-    const response = await ApiService.get<DashboardStats>(url);
-    return response.data as DashboardStats;
+    const response = await ApiService.get<{
+      success: boolean;
+      data: {
+        users: { total: number; new: number };
+        orders: { total: number };
+        revenue: { total: number; monthly: number };
+        products: { total: number };
+        designs: { total: number; new: number };
+      };
+    }>(url);
+
+    // Transform backend response to match DashboardStats interface
+    const backendData = response.data.data;
+    const dashboardStats: DashboardStats = {
+      totalRevenue: backendData.revenue.total,
+      totalOrders: backendData.orders.total,
+      totalCustomers: backendData.users.total,
+      totalProducts: backendData.products.total,
+      lowStockItems: 0, // This would need a separate API call
+      pendingReturns: 0, // This would need a separate API call
+      pendingDesigns: backendData.designs.new,
+      activeDesigners: backendData.users.total, // This is an approximation
+      revenueGrowth: 0, // This would need calculation from historical data
+      orderGrowth: 0, // This would need calculation from historical data
+    };
+
+    return dashboardStats;
   },
 
   // Get detailed admin analytics

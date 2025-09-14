@@ -295,6 +295,8 @@ export interface DashboardStats {
   totalProducts: number;
   lowStockItems: number;
   pendingReturns: number;
+  pendingDesigns: number;
+  activeDesigners: number;
   revenueGrowth: number;
   orderGrowth: number;
 }
