@@ -69,6 +69,8 @@ export interface Design {
   createdAt: string;
   updatedAt: string;
   tags?: string[];
+  views?: number;
+  earnings?: number;
 }
 
 export interface Stock {
