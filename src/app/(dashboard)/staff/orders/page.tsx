@@ -44,7 +44,7 @@ export default function StaffOrdersPage() {
     pending: pendingOrders.length,
     processing: assignedOrders.filter(o => o.status === 'processing').length,
     shipped: assignedOrders.filter(o => o.status === 'shipped').length,
-    urgent: allOrders.filter(o => (o as any).priority === 'urgent').length || 0
+    urgent: allOrders.filter(o => (o as Order & { priority?: string }).priority === 'urgent').length || 0
   }
 
   const isLoading = loadingPending || loadingAssigned
