@@ -53,7 +53,7 @@ export function ReportsGenerator() {
       const year = date.getFullYear();
 
       const response = await adminApi.generateMonthlyReport(month, year);
-      return response.data;
+      return response.data as unknown as Report;
     },
     onSuccess: () => {
       refetch();
