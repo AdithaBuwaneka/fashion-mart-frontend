@@ -23,7 +23,7 @@ export default function CustomerDashboard() {
   // Fetch user stats from API
   const { data: userProfile, isLoading: profileLoading } = useQuery({
     queryKey: ['customer-profile'],
-    queryFn: () => usersApi.getUserProfile()
+    queryFn: () => usersApi.getProfile()
   });
 
   // Fetch recent orders from API
