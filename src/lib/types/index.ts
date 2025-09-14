@@ -12,6 +12,8 @@ export interface User {
   avatar?: string;
   phone?: string;
   address?: Address;
+  wishlistCount?: number;
+  loyaltyPoints?: number;
 }
 
 export type UserRole = 'admin' | 'customer' | 'designer' | 'staff' | 'inventory_manager';
