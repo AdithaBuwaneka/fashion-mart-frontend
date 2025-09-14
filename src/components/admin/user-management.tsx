@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { apiClient } from '@/lib/api/config';
+import { usersApi } from '@/lib/api/users';
 import { User, UserRole } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -88,32 +88,37 @@ export function UserManagement() {
 
   const queryClient = useQueryClient();
 
-  const { data: users, isLoading } = useQuery({
+  const { data: usersData, isLoading } = useQuery({
     queryKey: ['admin-users', filters],
-    queryFn: async (): Promise<User[]> => {
-      const params = new URLSearchParams();
-      if (filters.search) params.append('search', filters.search);
-      if (filters.role !== 'all') params.append('role', filters.role);
-      if (filters.status !== 'all') params.append('status', filters.status);
-      
-      const response = await apiClient.get(`/admin/users?${params.toString()}`);
-      return response.data;
+    queryFn: async () => {
+      const roleFilter = filters.role === 'all' ? undefined : filters.role;
+      return await usersApi.getAllUsers(1, 50, roleFilter);
     },
   });
 
-  const updateUserMutation = useMutation({
-    mutationFn: async ({ userId, updates }: { userId: string; updates: Partial<User> }) => {
-      const response = await apiClient.patch(`/admin/users/${userId}`, updates);
-      return response.data;
+  const users = usersData?.users || [];
+
+  const updateUserRoleMutation = useMutation({
+    mutationFn: async ({ userId, role }: { userId: string; role: UserRole }) => {
+      return await usersApi.updateUserRole(userId, role);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-users'] });
     },
   });
 
-  const deleteUserMutation = useMutation({
+  const activateUserMutation = useMutation({
     mutationFn: async (userId: string) => {
-      await apiClient.delete(`/admin/users/${userId}`);
+      return await usersApi.activateUser(userId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-users'] });
+    },
+  });
+
+  const deactivateUserMutation = useMutation({
+    mutationFn: async (userId: string) => {
+      return await usersApi.deactivateUser(userId);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-users'] });
@@ -121,10 +126,15 @@ export function UserManagement() {
   });
 
   const toggleUserStatus = async (user: User) => {
-    updateUserMutation.mutate({
-      userId: user.id,
-      updates: { isActive: !user.isActive }
-    });
+    if (user.isActive) {
+      deactivateUserMutation.mutate(user.id);
+    } else {
+      activateUserMutation.mutate(user.id);
+    }
+  };
+
+  const updateUserRole = async (userId: string, newRole: UserRole) => {
+    updateUserRoleMutation.mutate({ userId, role: newRole });
   };
 
   const getRoleBadgeColor = (role: UserRole) => {

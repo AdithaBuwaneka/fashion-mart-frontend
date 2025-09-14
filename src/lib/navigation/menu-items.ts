@@ -59,6 +59,16 @@ export const getMenuItems = (role: UserRole): MenuItem[] => {
         icon: FileText,
       },
       {
+        title: 'Order Analytics',
+        href: '/admin/orders',
+        icon: TrendingUp,
+      },
+      {
+        title: 'Payment Management',
+        href: '/admin/payments',
+        icon: CreditCard,
+      },
+      {
         title: 'Bill Scanner',
         href: '/admin/bill-scanner',
         icon: Scan,

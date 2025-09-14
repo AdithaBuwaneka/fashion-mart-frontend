@@ -1,7 +1,7 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
-import { apiClient } from '@/lib/api/config';
+import { adminApi } from '@/lib/api/admin';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { 
@@ -40,8 +40,22 @@ export function AnalyticsCharts() {
   const { data: analytics, isLoading, error } = useQuery({
     queryKey: ['admin-analytics', timeRange],
     queryFn: async (): Promise<AnalyticsData> => {
-      const response = await apiClient.get(`/admin/analytics?range=${timeRange}`);
-      return response.data;
+      const startDate = new Date();
+      startDate.setDate(startDate.getDate() - (timeRange === '7d' ? 7 : timeRange === '30d' ? 30 : timeRange === '90d' ? 90 : 365));
+      const endDate = new Date();
+
+      const response = await adminApi.getAnalytics(
+        startDate.toISOString().split('T')[0],
+        endDate.toISOString().split('T')[0]
+      );
+
+      // Transform the response to match AnalyticsData interface
+      return {
+        revenue: response.revenueByMonth || [],
+        categories: response.revenueByCategory?.map(cat => ({ name: cat.categoryName, value: cat.revenue })) || [],
+        userGrowth: response.revenueByMonth?.map(month => ({ month: month.month, customers: month.orders, designers: 0 })) || [],
+        topProducts: response.topSellingProducts || []
+      } as AnalyticsData;
     },
     refetchInterval: 60000, // Refresh every minute
   });

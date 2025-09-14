@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
-import { apiClient } from '@/lib/api/config';
+import { adminApi } from '@/lib/api/admin';
 import { Report, ReportType } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -37,17 +37,22 @@ export function ReportsGenerator() {
   });
   const [isGenerating, setIsGenerating] = useState(false);
 
-  const { data: reports, isLoading, refetch } = useQuery({
+  const { data: reportsData, isLoading, refetch } = useQuery({
     queryKey: ['admin-reports'],
-    queryFn: async (): Promise<Report[]> => {
-      const response = await apiClient.get('/admin/reports');
-      return response.data;
+    queryFn: async () => {
+      return await adminApi.getAllReports(1, 50);
     },
   });
 
+  const reports = reportsData?.reports || [];
+
   const generateReportMutation = useMutation({
     mutationFn: async (filters: ReportFilters): Promise<Report> => {
-      const response = await apiClient.post('/admin/reports/generate', filters);
+      const date = new Date(filters.startDate);
+      const month = date.toLocaleString('default', { month: 'long' });
+      const year = date.getFullYear();
+
+      const response = await adminApi.generateMonthlyReport(month, year);
       return response.data;
     },
     onSuccess: () => {
