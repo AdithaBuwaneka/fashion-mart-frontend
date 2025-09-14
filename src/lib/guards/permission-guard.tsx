@@ -140,7 +140,7 @@ export function StaffOnly({ children, fallback }: { children: ReactNode; fallbac
 
 export function InventoryOnly({ children, fallback }: { children: ReactNode; fallback?: ReactNode }) {
   return (
-    <PermissionCheck role="inventory" fallback={fallback}>
+    <PermissionCheck role="inventory_manager" fallback={fallback}>
       {children}
     </PermissionCheck>
   );
