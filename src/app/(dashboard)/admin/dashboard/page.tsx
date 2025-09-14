@@ -4,11 +4,11 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { 
-  Users, 
-  ShoppingBag, 
-  TrendingUp, 
-  AlertTriangle, 
+import {
+  Users,
+  ShoppingBag,
+  TrendingUp,
+  AlertTriangle,
   DollarSign,
   Package,
   UserCheck,
@@ -17,17 +17,23 @@ import {
 } from 'lucide-react'
 import { RoleGuard } from '@/components/shared/role-guard'
 import { UserRoleManager } from '@/components/admin/user-role-manager'
+import { DashboardStats } from '@/components/admin/dashboard-stats'
+import { useQuery } from '@tanstack/react-query'
+import { adminApi } from '@/lib/api/admin'
+import { LoadingScreen } from '@/components/shared/loading-screen'
 
 export default function AdminDashboard() {
-  // Mock data - in real app, this would come from your API
-  const stats = {
-    totalUsers: 1234,
-    totalOrders: 456,
-    totalRevenue: 78900,
-    pendingDesigns: 12,
-    lowStockItems: 8,
-    activeDesigners: 23,
-    monthlyGrowth: 12.5
+  const { data: dashboardData, isLoading } = useQuery({
+    queryKey: ['admin-dashboard-overview'],
+    queryFn: async () => {
+      const stats = await adminApi.getDashboardStats();
+      return stats;
+    },
+    refetchInterval: 30000,
+  });
+
+  if (isLoading) {
+    return <LoadingScreen />;
   }
 
   return (
@@ -54,41 +60,7 @@ export default function AdminDashboard() {
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <StatsCard
-            title="Total Users"
-            value={stats.totalUsers.toLocaleString()}
-            description="Active users on platform"
-            icon={<Users className="h-4 w-4" />}
-            trend="+12%"
-            trendUp={true}
-          />
-          <StatsCard
-            title="Orders"
-            value={stats.totalOrders.toLocaleString()}
-            description="This month"
-            icon={<ShoppingBag className="h-4 w-4" />}
-            trend="+8%"
-            trendUp={true}
-          />
-          <StatsCard
-            title="Revenue"
-            value={`$${stats.totalRevenue.toLocaleString()}`}
-            description="Monthly revenue"
-            icon={<DollarSign className="h-4 w-4" />}
-            trend="+15%"
-            trendUp={true}
-          />
-          <StatsCard
-            title="Low Stock"
-            value={stats.lowStockItems.toString()}
-            description="Items need restocking"
-            icon={<AlertTriangle className="h-4 w-4" />}
-            trend="-2"
-            trendUp={false}
-            variant="warning"
-          />
-        </div>
+        <DashboardStats />
 
         {/* Quick Actions */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -108,14 +80,14 @@ export default function AdminDashboard() {
                   <Palette className="h-4 w-4 text-blue-500" />
                   <span className="text-sm font-medium">Designs for Approval</span>
                 </div>
-                <Badge variant="secondary">{stats.pendingDesigns}</Badge>
+                <Badge variant="secondary">{dashboardData?.pendingDesigns || 0}</Badge>
               </div>
               <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
                 <div className="flex items-center space-x-3">
                   <AlertTriangle className="h-4 w-4 text-yellow-500" />
                   <span className="text-sm font-medium">Low Stock Alerts</span>
                 </div>
-                <Badge variant="warning">{stats.lowStockItems}</Badge>
+                <Badge variant="warning">{dashboardData?.lowStockItems || 0}</Badge>
               </div>
               <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
                 <div className="flex items-center space-x-3">
@@ -140,11 +112,11 @@ export default function AdminDashboard() {
             <CardContent className="space-y-4">
               <div className="flex justify-between items-center">
                 <span className="text-sm text-muted-foreground">Active Designers</span>
-                <span className="font-semibold">{stats.activeDesigners}</span>
+                <span className="font-semibold">{dashboardData?.activeDesigners || 0}</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-muted-foreground">Monthly Growth</span>
-                <span className="font-semibold text-green-600">+{stats.monthlyGrowth}%</span>
+                <span className="font-semibold text-green-600">+{dashboardData?.revenueGrowth || 0}%</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-muted-foreground">Platform Health</span>
