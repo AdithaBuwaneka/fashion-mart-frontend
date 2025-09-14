@@ -41,11 +41,11 @@ export default function InventoryDashboardPage() {
         totalProducts: products.products.length,
         lowStockItems: lowStockProducts.length,
         outOfStockItems: products.products.filter(p =>
-          p.stock.every(s => s.quantity === 0) || p.stock.length === 0
+          p.stock?.every(s => s.quantity === 0) || p.stock?.length === 0
         ).length,
         pendingDesigns: pendingDesigns.length,
         totalValue: products.products.reduce((sum, p) => {
-          const totalStock = p.stock.reduce((stockSum, s) => stockSum + s.quantity, 0);
+          const totalStock = p.stock?.reduce((stockSum, s) => stockSum + s.quantity, 0) || 0;
           return sum + (p.price * totalStock);
         }, 0),
         monthlyTurnover: 15.7 // This would come from analytics API
@@ -67,13 +67,16 @@ export default function InventoryDashboardPage() {
     return <LoadingScreen />;
   }
 
-  const criticalAlerts = lowStockProducts?.slice(0, 3).map(product => ({
-    product: product.name,
-    currentStock: product.stock?.quantity || 0,
-    minStock: product.stock?.minThreshold || 0,
-    status: (product.stock?.quantity || 0) === 0 ? 'out-of-stock' :
-             (product.stock?.quantity || 0) <= (product.stock?.minThreshold || 0) * 0.3 ? 'critical' : 'warning'
-  })) || [];
+  const criticalAlerts = lowStockProducts?.slice(0, 3).map(product => {
+    const firstStock = product.stock?.[0];
+    return {
+      product: product.name,
+      currentStock: firstStock?.quantity || 0,
+      minStock: firstStock?.minThreshold || 0,
+      status: (firstStock?.quantity || 0) === 0 ? 'out-of-stock' :
+               (firstStock?.quantity || 0) <= (firstStock?.minThreshold || 0) * 0.3 ? 'critical' : 'warning'
+    };
+  }) || [];
 
   return (
     <RoleGuard allowedRoles={['inventory_manager']}>
@@ -203,7 +206,7 @@ export default function InventoryDashboardPage() {
             <div className="mt-4 pt-4 border-t">
               <Button asChild variant="outline" className="w-full">
                 <Link href="/inventory/alerts">
-                  View All Alerts ({inventoryStats.lowStockItems + inventoryStats.outOfStockItems})
+                  View All Alerts ({(inventoryStats?.lowStockItems || 0) + (inventoryStats?.outOfStockItems || 0)})
                 </Link>
               </Button>
             </div>

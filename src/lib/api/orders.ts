@@ -27,6 +27,11 @@ export interface OrderAnalytics {
     totalOrders: number;
     totalSpent: number;
   }>;
+  growthRates?: {
+    revenue: number;
+    orders: number;
+    customers: number;
+  };
 }
 
 export interface OrdersResponse {

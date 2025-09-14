@@ -68,7 +68,7 @@ export const adminApi = {
     }>(url);
 
     // Transform backend response to match DashboardStats interface
-    const backendData = response.data.data;
+    const backendData = response.data?.data;
     const dashboardStats: DashboardStats = {
       totalRevenue: backendData.revenue.total,
       totalOrders: backendData.orders.total,
