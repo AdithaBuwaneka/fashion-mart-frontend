@@ -59,17 +59,15 @@ export const designerApi = {
     formData.append('price', designData.price.toString());
     formData.append('tags', JSON.stringify(designData.tags));
 
-    // Add design images
+    // Add design images with correct field name
     designData.designImages.forEach((file) => {
       formData.append('designImages', file);
     });
 
-    const response = await ApiService.uploadFiles<Design>('/designer/designs', designData.designImages, {
-      title: designData.title,
-      description: designData.description,
-      categoryId: designData.categoryId,
-      price: designData.price,
-      tags: designData.tags
+    const response = await ApiService.post<Design>('/designer/designs', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
     });
     return response.data as Design;
   },
