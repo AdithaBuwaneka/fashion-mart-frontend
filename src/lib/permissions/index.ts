@@ -14,7 +14,8 @@ export type Permission =
   | 'manage_all_returns'
   | 'approve_all_designs'
   | 'manage_all_inventory'
-  
+  | 'manage_payments'
+
   // Customer permissions
   | 'browse_products'
   | 'place_orders'
@@ -58,6 +59,7 @@ export const rolePermissions: Record<UserRole, Permission[]> = {
     'manage_all_returns',
     'approve_all_designs',
     'manage_all_inventory',
+    'manage_payments',
     // Admin can do everything
     'browse_products',
     'place_orders',
