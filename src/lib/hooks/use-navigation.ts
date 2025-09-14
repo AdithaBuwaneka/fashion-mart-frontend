@@ -93,7 +93,7 @@ export function useNavigation() {
         '/staff/customers',
         '/staff/support'
       ],
-      inventory: [
+      inventory_manager: [
         '/inventory/dashboard',
         '/inventory/stock',
         '/inventory/designs',

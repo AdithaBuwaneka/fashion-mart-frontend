@@ -160,7 +160,7 @@ export function StaffGuard({ children, fallback }: { children: ReactNode; fallba
 
 export function InventoryGuard({ children, fallback }: { children: ReactNode; fallback?: ReactNode }) {
   return (
-    <RouteGuard requiredRole="inventory" fallback={fallback}>
+    <RouteGuard requiredRole="inventory_manager" fallback={fallback}>
       {children}
     </RouteGuard>
   );
