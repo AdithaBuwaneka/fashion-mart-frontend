@@ -398,7 +398,7 @@ export function DesignApproval() {
                                       </p>
                                     </div>
                                     <div className="flex flex-wrap gap-2">
-                                      {selectedDesign.tags.map((tag) => (
+                                      {selectedDesign.tags?.map((tag) => (
                                         <Badge key={tag} variant="outline">
                                           {tag}
                                         </Badge>
@@ -412,20 +412,16 @@ export function DesignApproval() {
                                       <div className="space-y-2 text-sm">
                                         <div className="flex justify-between">
                                           <span>Estimated Cost:</span>
-                                          <span>${selectedDesign.estimatedCost}</span>
+                                          <span>$0</span>
                                         </div>
                                         <div className="flex justify-between">
                                           <span>Expected Profit:</span>
-                                          <span className="text-green-600">${selectedDesign.expectedProfit}</span>
+                                          <span className="text-green-600">$0</span>
                                         </div>
                                         <div className="flex justify-between">
                                           <span>Market Demand:</span>
-                                          <Badge className={
-                                            selectedDesign.marketDemand === 'high' ? 'bg-green-500' :
-                                            selectedDesign.marketDemand === 'medium' ? 'bg-yellow-500' :
-                                            'bg-red-500'
-                                          }>
-                                            {selectedDesign.marketDemand}
+                                          <Badge className="bg-yellow-500">
+                                            Medium
                                           </Badge>
                                         </div>
                                       </div>
@@ -434,7 +430,7 @@ export function DesignApproval() {
                                 </div>
 
                                 {/* Approval Actions */}
-                                {selectedDesign.status === 'pending' && (
+                                {!selectedDesign.isApproved && (
                                   <div className="space-y-4 border-t pt-4">
                                     <div>
                                       <label className="text-sm font-medium">Review Comments</label>

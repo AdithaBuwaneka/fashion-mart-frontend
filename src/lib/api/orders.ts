@@ -162,5 +162,4 @@ export const ordersApi = {
 
 export default ordersApi;
 
-// Export types for use in components
-export type { OrderAnalytics };
+// OrderAnalytics interface is already exported above

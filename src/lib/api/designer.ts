@@ -1,5 +1,6 @@
 import ApiService from './config';
-import { Design, Category, DesignStatus } from '@/lib/types';
+import { Design, Category } from '@/lib/types';
+import { DesignStatus } from '@/lib/types/design';
 
 export interface DesignsResponse {
   designs: Design[];
