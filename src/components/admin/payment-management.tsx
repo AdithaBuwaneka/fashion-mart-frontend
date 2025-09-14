@@ -181,7 +181,7 @@ export function PaymentManagement() {
   //   queryKey: ['payment-stats', dateRange],
   //   queryFn: () => paymentsApi.getPaymentStats(dateRange.startDate, dateRange.endDate),
   // });
-  const paymentStats = null;
+  const paymentStats: any = null;
 
   // Get payments by date range when date filter is applied
   const { data: dateRangeData } = useQuery({
