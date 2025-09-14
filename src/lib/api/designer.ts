@@ -40,8 +40,16 @@ export const designerApi = {
     if (status) {
       url += `&status=${status}`;
     }
-    const response = await ApiService.get<DesignsResponse>(url);
-    return response.data as DesignsResponse;
+    const response = await ApiService.get<Design[]>(url);
+
+    // Backend returns { success: true, data: [designs] }
+    // ApiService.get returns the ApiResponse, so response.data contains the designs array
+    return {
+      designs: response.data || [],
+      total: response.data?.length || 0,
+      page: page,
+      limit: limit
+    };
   },
 
   // Get specific design by ID
@@ -52,24 +60,77 @@ export const designerApi = {
 
   // Create new design with file upload
   createDesign: async (designData: CreateDesignRequest): Promise<Design> => {
+    // Debug logging
+    console.log('Creating design with data:', {
+      title: designData.title,
+      description: designData.description,
+      categoryId: designData.categoryId,
+      price: designData.price,
+      tags: designData.tags,
+      imageCount: designData.designImages.length,
+      endpoint: '/designer/designs'
+    });
+
+    // First, test if backend is reachable
+    try {
+      console.log('Testing backend connection...');
+      await ApiService.get('/designer/categories');
+      console.log('Backend is reachable');
+    } catch (testError) {
+      console.error('Backend test failed:', testError);
+    }
+
+    // Validate required fields
+    if (!designData.title?.trim()) {
+      throw new Error('Title is required');
+    }
+    if (!designData.description?.trim()) {
+      throw new Error('Description is required');
+    }
+    if (!designData.categoryId?.trim()) {
+      throw new Error('Category is required');
+    }
+    if (!designData.designImages || designData.designImages.length === 0) {
+      throw new Error('At least one design image is required');
+    }
+
     const formData = new FormData();
-    formData.append('title', designData.title);
-    formData.append('description', designData.description);
-    formData.append('categoryId', designData.categoryId);
+    formData.append('name', designData.title.trim()); // Backend expects 'name' not 'title'
+    formData.append('description', designData.description.trim());
+    formData.append('categoryId', designData.categoryId.trim());
     formData.append('price', designData.price.toString());
-    formData.append('tags', JSON.stringify(designData.tags));
+    formData.append('tags', JSON.stringify(designData.tags || []));
 
     // Add design images with correct field name
-    designData.designImages.forEach((file) => {
+    designData.designImages.forEach((file, index) => {
+      console.log(`Adding file ${index}:`, {
+        name: file.name,
+        type: file.type,
+        size: file.size,
+        lastModified: file.lastModified
+      });
       formData.append('designImages', file);
     });
 
-    const response = await ApiService.post<Design>('/designer/designs', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
-    return response.data as Design;
+    // Log FormData contents (for debugging)
+    console.log('FormData entries:');
+    for (const [key, value] of formData.entries()) {
+      if (value instanceof File) {
+        console.log(`${key}:`, { name: value.name, type: value.type, size: value.size });
+      } else {
+        console.log(`${key}:`, value);
+      }
+    }
+
+    try {
+      console.log('Sending POST request to /designer/designs...');
+      const response = await ApiService.post<Design>('/designer/designs', formData);
+      console.log('Design creation successful:', response);
+      return response.data as Design;
+    } catch (error) {
+      console.error('Design creation failed in designer API:', error);
+      throw error;
+    }
   },
 
   // Update existing design

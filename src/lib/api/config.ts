@@ -35,6 +35,45 @@ apiClient.interceptors.response.use(
     return response;
   },
   (error) => {
+    // Log error details for debugging
+    console.error('Full API Error:', error);
+
+    if (error.response) {
+      const errorData = error.response.data;
+      console.error('API Response Error Details:', {
+        status: error.response.status,
+        statusText: error.response.statusText,
+        url: error.config?.url,
+        method: error.config?.method,
+        dataType: typeof errorData,
+        data: errorData
+      });
+
+      // Try to extract meaningful error message
+      try {
+        if (typeof errorData === 'string') {
+          console.error('Error message (string):', errorData);
+        } else if (errorData && typeof errorData === 'object') {
+          console.error('Error message (object):', JSON.stringify(errorData, null, 2));
+        }
+      } catch (e) {
+        console.error('Could not parse error data:', e);
+      }
+
+      // Log response headers which might contain useful info
+      console.error('Response headers:', error.response.headers);
+
+    } else if (error.request) {
+      console.error('API Request Error (no response):', {
+        url: error.config?.url,
+        method: error.config?.method,
+        timeout: error.code === 'ECONNABORTED' ? 'Request timed out' : 'No response',
+        request: error.request
+      });
+    } else {
+      console.error('API Setup Error:', error.message);
+    }
+
     // Handle common errors
     if (error.response?.status === 401) {
       // Unauthorized - redirect to login
@@ -43,7 +82,7 @@ apiClient.interceptors.response.use(
         window.location.href = '/sign-in';
       }
     }
-    
+
     return Promise.reject(error);
   }
 );
@@ -59,11 +98,17 @@ export class ApiService {
   }
 
   static async post<T>(
-    endpoint: string, 
-    data?: unknown, 
+    endpoint: string,
+    data?: unknown,
     config?: AxiosRequestConfig
   ): Promise<ApiResponse<T>> {
-    const response = await apiClient.post<ApiResponse<T>>(endpoint, data, config);
+    // If data is FormData, don't set Content-Type to let browser handle boundary
+    const finalConfig = { ...config };
+    if (data instanceof FormData && finalConfig.headers) {
+      delete finalConfig.headers['Content-Type'];
+    }
+
+    const response = await apiClient.post<ApiResponse<T>>(endpoint, data, finalConfig);
     return response.data;
   }
 

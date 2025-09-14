@@ -2,161 +2,53 @@
 'use client'
 
 import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { designerApi } from '@/lib/api/designer';
 import { DesignCard } from '@/components/designer/design-card';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { 
+import { LoadingScreen } from '@/components/shared/loading-screen';
+import {
   Upload,
   Search,
   Grid3X3,
   List,
-  Plus
+  Plus,
+  RefreshCw,
+  AlertCircle
 } from 'lucide-react';
 import Link from 'next/link';
 import { Design } from '@/lib/types';
-
-// Mock data - TODO: Replace with API calls
-const mockDesigns: (Design & {
-  views: number;
-  downloads: number;
-  sales: number;
-  revenue: number;
-  rating: number;
-})[] = [
-  {
-    id: '1',
-    name: 'Geometric Abstract Pattern',
-    description: 'A modern geometric pattern perfect for contemporary fashion pieces',
-    designerId: 'designer-1',
-    designer: {
-      id: 'designer-1',
-      clerkId: 'clerk-1',
-      email: 'designer@example.com',
-      firstName: 'Jane',
-      lastName: 'Doe',
-      role: 'designer',
-      isActive: true,
-      createdAt: '2024-01-01',
-      updatedAt: '2024-01-01'
-    },
-    imageUrl: '/images/designs/geometric-abstract.jpg',
-    isApproved: true,
-    isActive: true,
-    createdAt: '2024-06-01',
-    updatedAt: '2024-06-01',
-    tags: ['geometric', 'abstract', 'modern', 'pattern'],
-    views: 234,
-    downloads: 45,
-    sales: 12,
-    revenue: 480.00,
-    rating: 4.8
-  },
-  {
-    id: '2',
-    name: 'Vintage Floral Collection',
-    description: 'Elegant vintage-inspired floral patterns for timeless designs',
-    designerId: 'designer-1',
-    designer: {
-      id: 'designer-1',
-      clerkId: 'clerk-1',
-      email: 'designer@example.com',
-      firstName: 'Jane',
-      lastName: 'Doe',
-      role: 'designer',
-      isActive: true,
-      createdAt: '2024-01-01',
-      updatedAt: '2024-01-01'
-    },
-    imageUrl: '/images/designs/vintage-floral.jpg',
-    isApproved: true,
-    isActive: true,
-    createdAt: '2024-05-15',
-    updatedAt: '2024-05-15',
-    tags: ['vintage', 'floral', 'classic', 'elegant'],
-    views: 187,
-    downloads: 32,
-    sales: 8,
-    revenue: 320.00,
-    rating: 4.6
-  },
-  {
-    id: '3',
-    name: 'Urban Street Art',
-    description: 'Bold street art inspired designs for urban fashion',
-    designerId: 'designer-1',
-    designer: {
-      id: 'designer-1',
-      clerkId: 'clerk-1',
-      email: 'designer@example.com',
-      firstName: 'Jane',
-      lastName: 'Doe',
-      role: 'designer',
-      isActive: true,
-      createdAt: '2024-01-01',
-      updatedAt: '2024-01-01'
-    },
-    imageUrl: '/images/designs/urban-street.jpg',
-    isApproved: false,
-    isActive: true,
-    createdAt: '2024-06-20',
-    updatedAt: '2024-06-20',
-    tags: ['urban', 'street', 'graffiti', 'bold'],
-    views: 89,
-    downloads: 12,
-    sales: 3,
-    revenue: 120.00,
-    rating: 4.2
-  },
-  {
-    id: '4',
-    name: 'Minimalist Lines',
-    description: 'Clean minimalist line art for sophisticated fashion pieces',
-    designerId: 'designer-1',
-    designer: {
-      id: 'designer-1',
-      clerkId: 'clerk-1',
-      email: 'designer@example.com',
-      firstName: 'Jane',
-      lastName: 'Doe',
-      role: 'designer',
-      isActive: true,
-      createdAt: '2024-01-01',
-      updatedAt: '2024-01-01'
-    },
-    imageUrl: '/images/designs/minimalist-lines.jpg',
-    isApproved: true,
-    isActive: true,
-    createdAt: '2024-06-10',
-    updatedAt: '2024-06-10',
-    tags: ['minimalist', 'lines', 'clean', 'sophisticated'],
-    views: 156,
-    downloads: 28,
-    sales: 6,
-    revenue: 240.00,
-    rating: 4.4
-  }
-];
+import { DesignStatus } from '@/lib/types/design';
 
 export default function DesignerPortfolio() {
-  const [designs, setDesigns] = useState(mockDesigns);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterStatus, setFilterStatus] = useState<'all' | 'approved' | 'pending'>('all');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [sortBy, setSortBy] = useState<'newest' | 'oldest' | 'popular' | 'revenue'>('newest');
 
+  // Fetch designer's designs from API
+  const { data: designsResponse, isLoading, error, refetch } = useQuery({
+    queryKey: ['designer-designs'],
+    queryFn: () => designerApi.getDesignerDesigns(1, 50), // Get first 50 designs
+    staleTime: 30000, // Cache for 30 seconds
+  });
+
+  const designs = designsResponse?.designs || [];
+
   // Filter and sort designs
   const filteredDesigns = designs
     .filter(design => {
-      const matchesSearch = design.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                           design.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      const matchesSearch = design.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                           design.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
                            design.tags?.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
-      
-      const matchesFilter = filterStatus === 'all' || 
-                           (filterStatus === 'approved' && design.isApproved) ||
-                           (filterStatus === 'pending' && !design.isApproved);
-      
+
+      const matchesFilter = filterStatus === 'all' ||
+                           (filterStatus === 'approved' && design.status === 'approved') ||
+                           (filterStatus === 'pending' && (design.status === 'pending' || design.status === 'draft'));
+
       return matchesSearch && matchesFilter;
     })
     .sort((a, b) => {
@@ -166,9 +58,9 @@ export default function DesignerPortfolio() {
         case 'oldest':
           return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
         case 'popular':
-          return b.views - a.views;
+          return 0; // API doesn't have views data yet
         case 'revenue':
-          return b.revenue - a.revenue;
+          return 0; // API doesn't have revenue data yet
         default:
           return 0;
       }
@@ -176,26 +68,49 @@ export default function DesignerPortfolio() {
 
   const handleEdit = (designId: string) => {
     console.log('Edit design:', designId);
-    // TODO: Navigate to edit page or open edit modal
+    // TODO: Navigate to edit page
   };
 
-  const handleDelete = (designId: string) => {
+  const handleDelete = async (designId: string) => {
     if (confirm('Are you sure you want to delete this design?')) {
-      setDesigns(prev => prev.filter(d => d.id !== designId));
+      try {
+        await designerApi.deleteDesign(designId);
+        refetch(); // Refresh the designs list
+      } catch (error) {
+        console.error('Failed to delete design:', error);
+      }
     }
   };
 
   const handleToggleApproval = (designId: string) => {
-    setDesigns(prev => prev.map(d => 
-      d.id === designId 
-        ? { ...d, isApproved: !d.isApproved }
-        : d
-    ));
+    // This would require an admin API call, not available to designers
+    console.log('Toggle approval for:', designId);
   };
 
-  const totalRevenue = designs.reduce((sum, design) => sum + design.revenue, 0);
-  const approvedCount = designs.filter(d => d.isApproved).length;
-  const pendingCount = designs.filter(d => !d.isApproved).length;
+  // Calculate stats from real data
+  const totalRevenue = 0; // API doesn't provide revenue data yet
+  const approvedCount = designs.filter(d => d.status === 'approved').length;
+  const pendingCount = designs.filter(d => d.status === 'pending' || d.status === 'draft').length;
+
+  // Handle loading state
+  if (isLoading) {
+    return <LoadingScreen />;
+  }
+
+  // Handle error state
+  if (error) {
+    return (
+      <div className="text-center p-8">
+        <AlertCircle className="h-12 w-12 mx-auto mb-4 text-red-500" />
+        <h3 className="text-lg font-semibold text-red-600 mb-2">Failed to Load Designs</h3>
+        <p className="text-gray-600 mb-4">There was an error loading your design portfolio.</p>
+        <Button onClick={() => refetch()} variant="outline">
+          <RefreshCw className="h-4 w-4 mr-2" />
+          Try Again
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

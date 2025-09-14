@@ -51,6 +51,42 @@ export function DesignCard({
   const [isHovered, setIsHovered] = useState(false);
   const [imageLoading, setImageLoading] = useState(true);
 
+  // Helper function to convert backend file path to accessible URL
+  const getImageUrl = (imagePath: string) => {
+    console.log('Processing image path:', imagePath);
+
+    if (!imagePath) {
+      console.log('No image path provided, using placeholder');
+      return '/images/placeholder-design.jpg';
+    }
+
+    // Convert backslashes to forward slashes
+    const normalizedPath = imagePath.replace(/\\/g, '/');
+    console.log('Normalized path:', normalizedPath);
+
+    // Extract path after 'uploads/' - handle both relative and absolute paths
+    const uploadsIndex = normalizedPath.lastIndexOf('/uploads/');
+    console.log('Uploads index:', uploadsIndex);
+
+    if (uploadsIndex !== -1) {
+      const relativePath = normalizedPath.substring(uploadsIndex + 1); // +1 to exclude the leading slash
+      const finalUrl = `http://localhost:5000/${relativePath}`;
+      console.log('Image URL constructed:', {
+        originalPath: imagePath,
+        normalizedPath,
+        uploadsIndex,
+        relativePath,
+        finalUrl
+      });
+      return finalUrl;
+    }
+
+    // If no 'uploads/' found, assume it's already a relative path
+    const finalUrl = `http://localhost:5000/${normalizedPath}`;
+    console.log('Image URL constructed (fallback):', { originalPath: imagePath, finalUrl });
+    return finalUrl;
+  };
+
   const getStatusColor = (isApproved: boolean) => {
     return isApproved 
       ? 'bg-green-100 text-green-800 border-green-200' 
@@ -82,8 +118,8 @@ export function DesignCard({
         {/* Design Image */}
         <div className="aspect-square relative bg-gray-100 dark:bg-gray-800">
           <Image
-            src={design.imageUrl || '/images/placeholder-design.jpg'}
-            alt={design.name}
+            src={design.images?.[0] ? getImageUrl(design.images[0]) : '/images/placeholder-design.jpg'}
+            alt={design.name || 'Design'}
             fill
             className={cn(
               "object-cover transition-all duration-300",

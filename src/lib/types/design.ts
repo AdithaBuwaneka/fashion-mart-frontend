@@ -4,20 +4,29 @@ import type { User } from './user';
 export interface Design {
   id: string;
   designerId: string;
-  designer: User;
-  title: string;
+  designer?: User;
+  name: string; // Backend uses 'name', not 'title'
   description: string;
   images: string[];
-  files: string[];
   status: DesignStatus;
+  categoryId?: string | number;
+  category?: {
+    id: number;
+    name: string;
+    description?: string;
+    image?: string;
+    active: boolean;
+    parentId?: number;
+    createdAt: string;
+    updatedAt: string;
+  };
   approvedBy?: string;
   approver?: User;
   rejectionReason?: string;
   price?: number;
-  royaltyPercentage?: number;
-  tags: string[];
+  tags?: string[];
   createdAt: string;
   updatedAt: string;
 }
 
-export type DesignStatus = 'pending' | 'approved' | 'rejected' | 'in_production';
+export type DesignStatus = 'draft' | 'pending' | 'approved' | 'rejected' | 'in_production';

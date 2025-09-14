@@ -2,6 +2,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation';
+import { useQueryClient } from '@tanstack/react-query';
 import { DesignUpload } from '@/components/designer/design-upload';
 import { designerApi } from '@/lib/api/designer';
 import { toast } from 'sonner';
@@ -24,9 +25,11 @@ interface DesignMetadata {
 
 export default function DesignUploadPage() {
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   const handleUpload = async (files: UploadFile[], metadata: DesignMetadata) => {
     try {
+      console.log('Starting design upload...');
       const designData = {
         title: metadata.title,
         description: metadata.description,
@@ -36,13 +39,33 @@ export default function DesignUploadPage() {
         designImages: files.map(f => f.file)
       };
 
-      await designerApi.createDesign(designData);
+      console.log('Calling createDesign API...');
+      const result = await designerApi.createDesign(designData);
+      console.log('Design creation successful:', result);
+
+      // Invalidate and refetch the designs list
+      await queryClient.invalidateQueries({ queryKey: ['designer-designs'] });
 
       toast.success('Design uploaded successfully! It will be reviewed by our team.');
+      console.log('Toast sent, navigating to portfolio...');
       router.push('/designer/portfolio');
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Upload failed:', error);
-      toast.error('Failed to upload design. Please try again.');
+
+      // Show specific error message if available
+      let errorMessage = 'Failed to upload design. Please try again.';
+      if (error && typeof error === 'object' && 'response' in error) {
+        const axiosError = error as { response?: { data?: { message?: string }; status?: number } };
+        if (axiosError.response?.data?.message) {
+          errorMessage = axiosError.response.data.message;
+        } else if (axiosError.response?.status === 400) {
+          errorMessage = 'Invalid design data. Please check all fields and try again.';
+        } else if (axiosError.response?.status === 413) {
+          errorMessage = 'File(s) too large. Please reduce file size and try again.';
+        }
+      }
+
+      toast.error(errorMessage);
     }
   };
 
