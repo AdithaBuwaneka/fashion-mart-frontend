@@ -9,7 +9,6 @@ import { ProtectedRoute } from '@/components/shared/protected-route'
 import { ErrorBoundary } from '@/components/shared/error-boundary'
 import { Navbar } from '@/components/layout/navbar'
 import { Sidebar } from '@/components/layout/sidebar'
-import { Footer } from '@/components/layout/footer'
 import { Breadcrumb } from '@/components/layout/breadcrumb'
 
 export default function DashboardLayout({
@@ -39,8 +38,6 @@ export default function DashboardLayout({
               </div>
             </main>
           </div>
-          
-          <Footer />
         </div>
       </ErrorBoundary>
     </ProtectedRoute>
