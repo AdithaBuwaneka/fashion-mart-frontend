@@ -70,14 +70,14 @@ export const adminApi = {
     // Transform backend response to match DashboardStats interface
     const backendData = response.data?.data;
     const dashboardStats: DashboardStats = {
-      totalRevenue: backendData.revenue.total,
-      totalOrders: backendData.orders.total,
-      totalCustomers: backendData.users.total,
-      totalProducts: backendData.products.total,
+      totalRevenue: backendData?.revenue?.total || 0,
+      totalOrders: backendData?.orders?.total || 0,
+      totalCustomers: backendData?.users?.total || 0,
+      totalProducts: backendData?.products?.total || 0,
       lowStockItems: 0, // This would need a separate API call
       pendingReturns: 0, // This would need a separate API call
-      pendingDesigns: backendData.designs.new,
-      activeDesigners: backendData.users.total, // This is an approximation
+      pendingDesigns: backendData?.designs?.new || 0,
+      activeDesigners: backendData?.users?.total || 0, // This is an approximation
       revenueGrowth: 0, // This would need calculation from historical data
       orderGrowth: 0, // This would need calculation from historical data
     };
