@@ -85,7 +85,14 @@ export interface ReportParams {
 }
 
 export const reportsApi = {
-  // Dashboard statistics
+  // Dashboard statistics (Admin)
+  getAdminDashboardStats: async (period?: string): Promise<DashboardStats> => {
+    const url = period ? `/admin/dashboard/stats?period=${period}` : '/admin/dashboard/stats';
+    const response = await ApiService.get<DashboardStats>(url);
+    return response.data as DashboardStats;
+  },
+
+  // General dashboard statistics
   getDashboardStats: async (period?: string): Promise<DashboardStats> => {
     const url = period ? `/reports/dashboard?period=${period}` : '/reports/dashboard';
     const response = await ApiService.get<DashboardStats>(url);
@@ -155,6 +162,21 @@ export const reportsApi = {
       responseType: 'blob'
     });
     return response.data as Blob;
+  },
+
+  // Get all reports (admin)
+  getAllReports: async (): Promise<Report[]> => {
+    const response = await ApiService.get<Report[]>('/admin/reports');
+    return response.data as Report[];
+  },
+
+  // Generate monthly report (admin)
+  generateMonthlyReport: async (month: string, year: number): Promise<Report> => {
+    const response = await ApiService.post<Report>('/admin/reports/monthly', {
+      month,
+      year
+    });
+    return response.data as Report;
   },
 
   // Schedule reports

@@ -3,7 +3,7 @@
 import { useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useMutation } from '@tanstack/react-query';
-import { apiClient } from '@/lib/api/config';
+import { adminApi } from '@/lib/api/admin';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -42,15 +42,29 @@ export function BillScanner() {
 
   const scanBillMutation = useMutation({
     mutationFn: async (file: File): Promise<ScanResult> => {
-      const formData = new FormData();
-      formData.append('bill', file);
-      
-      const response = await apiClient.post('/admin/bill-scan', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
+      const response = await adminApi.processBill({
+        billImage: file,
+        extractFields: ['vendor', 'totalAmount', 'date', 'items']
       });
-      return response.data;
+
+      // Transform the API response to match our ScanResult interface
+      return {
+        id: Date.now().toString(),
+        filename: file.name,
+        extractedData: {
+          vendorName: response.extractedData.vendor,
+          totalAmount: response.extractedData.totalAmount,
+          date: response.extractedData.date,
+          items: response.extractedData.items?.map(item => ({
+            description: item.name,
+            quantity: item.quantity,
+            price: item.unitPrice
+          })) || [],
+          confidence: response.confidence
+        },
+        status: response.success ? 'completed' : 'failed',
+        createdAt: new Date().toISOString()
+      } as ScanResult;
     },
     onSuccess: (result) => {
       setScanResults(prev => [result, ...prev]);

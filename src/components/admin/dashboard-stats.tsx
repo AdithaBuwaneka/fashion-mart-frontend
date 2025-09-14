@@ -1,7 +1,7 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
-import { apiClient } from '@/lib/api/config';
+import { adminApi } from '@/lib/api/admin';
 import { DashboardStats as DashboardStatsType } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { 
@@ -20,8 +20,7 @@ export function DashboardStats() {
   const { data: stats, isLoading, error } = useQuery({
     queryKey: ['admin-dashboard-stats'],
     queryFn: async (): Promise<DashboardStatsType> => {
-      const response = await apiClient.get('/admin/dashboard');
-      return response.data;
+      return await adminApi.getDashboardStats();
     },
     refetchInterval: 30000, // Refresh every 30 seconds
   });

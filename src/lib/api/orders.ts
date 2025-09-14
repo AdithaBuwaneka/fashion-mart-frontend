@@ -1,5 +1,33 @@
 import ApiService from './config';
-import { Order, OrderStatus, OrderForm, Payment, PaymentMethod, Address } from '@/lib/types';
+import { Order, OrderStatus, PaymentMethod, Address } from '@/lib/types';
+
+export interface OrderAnalytics {
+  totalOrders: number;
+  totalRevenue: number;
+  averageOrderValue: number;
+  ordersByStatus: Array<{
+    status: OrderStatus;
+    count: number;
+    percentage: number;
+  }>;
+  salesByDate: Array<{
+    date: string;
+    orders: number;
+    revenue: number;
+  }>;
+  topProducts: Array<{
+    productId: string;
+    productName: string;
+    quantitySold: number;
+    revenue: number;
+  }>;
+  topCustomers: Array<{
+    customerId: string;
+    customerName: string;
+    totalOrders: number;
+    totalSpent: number;
+  }>;
+}
 
 export interface OrdersResponse {
   orders: Order[];
@@ -92,7 +120,54 @@ export const ordersApi = {
     }
     const response = await ApiService.get<OrdersResponse>(url);
     return response.data as OrdersResponse;
+  },
+
+  // Get order analytics - MISSING ENDPOINT IMPLEMENTATION
+  getOrderAnalytics: async (startDate?: string, endDate?: string): Promise<OrderAnalytics> => {
+    let url = '/orders/analytics';
+    const params = new URLSearchParams();
+    if (startDate) params.append('startDate', startDate);
+    if (endDate) params.append('endDate', endDate);
+    if (params.toString()) url += `?${params.toString()}`;
+
+    const response = await ApiService.get<OrderAnalytics>(url);
+    return response.data as OrderAnalytics;
+  },
+
+  // Export orders - MISSING ENDPOINT IMPLEMENTATION
+  exportOrders: async (format: 'csv' | 'pdf' | 'excel' = 'csv', filters?: {
+    startDate?: string;
+    endDate?: string;
+    status?: OrderStatus;
+    customerId?: string;
+  }): Promise<Blob> => {
+    let url = `/orders/export?format=${format}`;
+    if (filters) {
+      const params = new URLSearchParams();
+      if (filters.startDate) params.append('startDate', filters.startDate);
+      if (filters.endDate) params.append('endDate', filters.endDate);
+      if (filters.status) params.append('status', filters.status);
+      if (filters.customerId) params.append('customerId', filters.customerId);
+      if (params.toString()) url += `&${params.toString()}`;
+    }
+
+    const response = await ApiService.get(url, {
+      responseType: 'blob'
+    });
+    return response.data as Blob;
+  },
+
+  // Bulk update orders status (admin/staff only)
+  bulkUpdateOrderStatus: async (orderIds: string[], status: OrderStatus): Promise<{ success: boolean; updated: number; message: string }> => {
+    const response = await ApiService.put<{ success: boolean; updated: number; message: string }>('/orders/bulk-update', {
+      orderIds,
+      status
+    });
+    return response.data as { success: boolean; updated: number; message: string };
   }
 };
 
 export default ordersApi;
+
+// Export types for use in components
+export type { OrderAnalytics };
