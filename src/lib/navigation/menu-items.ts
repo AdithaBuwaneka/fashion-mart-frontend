@@ -10,8 +10,7 @@ import {
   Palette, 
   Truck, 
   ArrowLeftRight, 
-  Bell, 
-  Settings,
+  Bell,
   CreditCard,
   UserCheck,
   Scan,
@@ -72,11 +71,6 @@ export const getMenuItems = (role: UserRole): MenuItem[] => {
         title: 'Bill Scanner',
         href: '/admin/bill-scanner',
         icon: Scan,
-      },
-      {
-        title: 'Settings',
-        href: '/admin/settings',
-        icon: Settings,
       },
     ],
     customer: [

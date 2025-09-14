@@ -1,6 +1,8 @@
 // src/app/(dashboard)/staff/orders/page.tsx
 'use client'
 
+import { useQuery } from '@tanstack/react-query'
+import { staffApi } from '@/lib/api/staff'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -23,76 +25,59 @@ import { OrderQueue } from '@/components/staff/order-queue'
 import Link from 'next/link'
 
 export default function StaffOrdersPage() {
-  // Mock data - would come from API
+  // Fetch pending and assigned orders
+  const { data: pendingOrdersData, isLoading: loadingPending } = useQuery({
+    queryKey: ['staff-pending-orders'],
+    queryFn: () => staffApi.getPendingOrders(1, 50)
+  })
+
+  const { data: assignedOrdersData, isLoading: loadingAssigned } = useQuery({
+    queryKey: ['staff-assigned-orders'],
+    queryFn: () => staffApi.getAssignedOrders(1, 50)
+  })
+
+  const pendingOrders = pendingOrdersData?.orders || []
+  const assignedOrders = assignedOrdersData?.orders || []
+  const allOrders = [...pendingOrders, ...assignedOrders]
+
   const orderStats = {
-    pending: 12,
-    processing: 8,
-    shipped: 15,
-    urgent: 3
+    pending: pendingOrders.length,
+    processing: assignedOrders.filter(o => o.status === 'processing').length,
+    shipped: assignedOrders.filter(o => o.status === 'shipped').length,
+    urgent: allOrders.filter(o => o.priority === 'urgent').length || 0
   }
 
-  const orders = [
-    {
-      id: 'ORD-001',
-      orderNumber: 'ORD-2024-001',
-      customer: {
-        name: 'Alice Johnson',
-        email: 'alice@example.com'
-      },
-      status: 'pending',
-      priority: 'high',
-      total: 156.50,
-      items: 3,
-      createdAt: '2024-06-28T10:30:00Z',
-      estimatedDelivery: '2024-07-02',
-      shippingAddress: {
-        street: '123 Main St',
-        city: 'New York',
-        state: 'NY',
-        zipCode: '10001'
-      }
+  const isLoading = loadingPending || loadingAssigned
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+      </div>
+    )
+  }
+
+  const orders = allOrders.map(order => ({
+    id: order.id,
+    orderNumber: order.orderNumber || `ORD-${order.id}`,
+    customer: {
+      name: `${order.customer?.firstName || ''} ${order.customer?.lastName || ''}`.trim() || 'Unknown Customer',
+      email: order.customer?.email || 'No email'
     },
-    {
-      id: 'ORD-002',
-      orderNumber: 'ORD-2024-002',
-      customer: {
-        name: 'Bob Smith',
-        email: 'bob@example.com'
-      },
-      status: 'processing',
-      priority: 'medium',
-      total: 89.99,
-      items: 2,
-      createdAt: '2024-06-28T09:15:00Z',
-      estimatedDelivery: '2024-07-01',
-      shippingAddress: {
-        street: '456 Oak Ave',
-        city: 'Los Angeles',
-        state: 'CA',
-        zipCode: '90210'
-      }
-    },
-    {
-      id: 'ORD-003',
-      orderNumber: 'ORD-2024-003',
-      customer: {
-        name: 'Carol Davis',
-        email: 'carol@example.com'
-      },
-      status: 'pending',
-      priority: 'urgent',
-      total: 299.99,
-      items: 5,
-      createdAt: '2024-06-28T08:45:00Z',
-      estimatedDelivery: '2024-06-30',
-      shippingAddress: {
-        street: '789 Pine St',
-        city: 'Chicago',
-        state: 'IL',
-        zipCode: '60601'
-      }
+    status: order.status,
+    priority: (order as any).priority || 'medium', // Add priority field to Order type if needed
+    total: order.totalAmount,
+    items: order.items?.length || 0,
+    createdAt: order.createdAt,
+    estimatedDelivery: order.estimatedDelivery || 'TBD',
+    shippingAddress: {
+      street: order.shippingAddress?.street || '',
+      city: order.shippingAddress?.city || 'Unknown',
+      state: order.shippingAddress?.state || '',
+      zipCode: order.shippingAddress?.zipCode || ''
     }
-  ]
+  }))
+
 
   const getStatusColor = (status: string) => {
     switch (status) {

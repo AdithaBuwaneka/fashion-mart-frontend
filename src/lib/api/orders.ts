@@ -91,7 +91,7 @@ export const ordersApi = {
   // Create payment intent for order
   createPaymentIntent: async (paymentData: CreatePaymentIntentRequest): Promise<PaymentIntent> => {
     const response = await ApiService.post<PaymentIntent>(
-      `/customer/orders/${paymentData.orderId}/payment`, 
+      `/customer/orders/${paymentData.orderId}/payment`,
       paymentData
     );
     return response.data as PaymentIntent;
@@ -100,11 +100,12 @@ export const ordersApi = {
   // Confirm payment for order
   confirmPayment: async (confirmData: ConfirmPaymentRequest): Promise<Order> => {
     const response = await ApiService.post<Order>(
-      `/customer/orders/${confirmData.orderId}/payment/confirm`, 
+      `/customer/orders/${confirmData.orderId}/payment/confirm`,
       confirmData
     );
     return response.data as Order;
   },
+
 
   // Update order status (admin/staff only)
   updateOrderStatus: async (orderId: string, status: OrderStatus): Promise<Order> => {
@@ -134,7 +135,7 @@ export const ordersApi = {
     return response.data as OrderAnalytics;
   },
 
-  // Export orders - MISSING ENDPOINT IMPLEMENTATION
+  // Export orders
   exportOrders: async (format: 'csv' | 'pdf' | 'excel' = 'csv', filters?: {
     startDate?: string;
     endDate?: string;
@@ -157,14 +158,6 @@ export const ordersApi = {
     return response.data as Blob;
   },
 
-  // Bulk update orders status (admin/staff only)
-  bulkUpdateOrderStatus: async (orderIds: string[], status: OrderStatus): Promise<{ success: boolean; updated: number; message: string }> => {
-    const response = await ApiService.put<{ success: boolean; updated: number; message: string }>('/orders/bulk-update', {
-      orderIds,
-      status
-    });
-    return response.data as { success: boolean; updated: number; message: string };
-  }
 };
 
 export default ordersApi;

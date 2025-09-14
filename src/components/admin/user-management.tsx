@@ -8,12 +8,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { 
-  Search, 
-  Edit, 
-  Trash2, 
-  UserCheck, 
-  UserX,
+import {
+  Search,
+  Edit,
+  UserCheck,
   Mail,
   Phone,
   Users
@@ -107,31 +105,6 @@ export function UserManagement() {
     },
   });
 
-  const activateUserMutation = useMutation({
-    mutationFn: async (userId: string) => {
-      return await usersApi.activateUser(userId);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-users'] });
-    },
-  });
-
-  const deactivateUserMutation = useMutation({
-    mutationFn: async (userId: string) => {
-      return await usersApi.deactivateUser(userId);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-users'] });
-    },
-  });
-
-  const toggleUserStatus = async (user: User) => {
-    if (user.isActive) {
-      deactivateUserMutation.mutate(user.id);
-    } else {
-      activateUserMutation.mutate(user.id);
-    }
-  };
 
   const updateUserRole = async (userId: string, newRole: UserRole) => {
     updateUserRoleMutation.mutate({ userId, role: newRole });
@@ -275,33 +248,9 @@ export function UserManagement() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => toggleUserStatus(user)}
-                        className="h-8 w-8 p-0"
-                      >
-                        {user.isActive ? (
-                          <UserX className="h-4 w-4" />
-                        ) : (
-                          <UserCheck className="h-4 w-4" />
-                        )}
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
                         className="h-8 w-8 p-0"
                       >
                         <Edit className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => {
-                          if (confirm(`Are you sure you want to delete ${user.firstName} ${user.lastName}?`)) {
-                            deleteUserMutation.mutate(user.id);
-                          }
-                        }}
-                        className="h-8 w-8 p-0 text-red-600 hover:text-red-700"
-                      >
-                        <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
                   </TableCell>

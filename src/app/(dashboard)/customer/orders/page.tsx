@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { ordersApi } from '@/lib/api/orders';
 import { Order, OrderStatus } from '@/lib/types';
 import { OrderHistory } from '@/components/customer/order-history';
 import { Button } from '@/components/ui/button';
@@ -15,145 +17,16 @@ import {
 import Link from 'next/link';
 
 export default function OrdersPage() {
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<OrderStatus | 'all'>('all');
 
-  // Mock data - TODO: Replace with API calls
-  useEffect(() => {
-    const mockOrders: Order[] = [
-      {
-        id: '1',
-        customerId: '1',
-        customer: {
-          id: '1',
-          clerkId: 'user_1',
-          email: 'customer@example.com',
-          firstName: 'John',
-          lastName: 'Doe',
-          role: 'customer',
-          isActive: true,
-          createdAt: '2025-06-01T00:00:00Z',
-          updatedAt: '2025-06-25T00:00:00Z'
-        },
-        orderNumber: 'FM-001234',
-        status: 'delivered',
-        totalAmount: 179.98,
-        shippingAddress: {
-          street: '123 Main St',
-          city: 'New York',
-          state: 'NY',
-          zipCode: '10001',
-          country: 'United States'
-        },
-        billingAddress: {
-          street: '123 Main St',
-          city: 'New York',
-          state: 'NY',
-          zipCode: '10001',
-          country: 'United States'
-        },
-        items: [
-          {
-            id: '1',
-            orderId: '1',
-            productId: '1',
-            product: {
-              id: '1',
-              name: 'Elegant Summer Dress',
-              description: 'A beautiful flowing dress perfect for summer occasions',
-              price: 89.99,
-              categoryId: '1',
-              category: { id: '1', name: 'Dresses', isActive: true },
-              images: ['/images/products/dress1.jpg'],
-              sizes: [],
-              colors: [],
-              isActive: true,
-              createdAt: '2025-06-01T00:00:00Z',
-              updatedAt: '2025-06-25T00:00:00Z',
-              stock: []
-            },
-            quantity: 2,
-            price: 89.99,
-            size: 'M',
-            color: 'Blue'
-          }
-        ],
-        createdAt: '2025-06-20T10:30:00Z',
-        updatedAt: '2025-06-25T14:20:00Z',
-        estimatedDelivery: '2025-06-27T00:00:00Z',
-        trackingNumber: 'TRK123456789'
-      },
-      {
-        id: '2',
-        customerId: '1',
-        customer: {
-          id: '1',
-          clerkId: 'user_1',
-          email: 'customer@example.com',
-          firstName: 'John',
-          lastName: 'Doe',
-          role: 'customer',
-          isActive: true,
-          createdAt: '2025-06-01T00:00:00Z',
-          updatedAt: '2025-06-25T00:00:00Z'
-        },
-        orderNumber: 'FM-001235',
-        status: 'shipped',
-        totalAmount: 59.98,
-        shippingAddress: {
-          street: '123 Main St',
-          city: 'New York',
-          state: 'NY',
-          zipCode: '10001',
-          country: 'United States'
-        },
-        billingAddress: {
-          street: '123 Main St',
-          city: 'New York',
-          state: 'NY',
-          zipCode: '10001',
-          country: 'United States'
-        },
-        items: [
-          {
-            id: '2',
-            orderId: '2',
-            productId: '2',
-            product: {
-              id: '2',
-              name: 'Casual Cotton T-Shirt',
-              description: 'Comfortable everyday cotton t-shirt',
-              price: 29.99,
-              categoryId: '2',
-              category: { id: '2', name: 'T-Shirts', isActive: true },
-              images: ['/images/products/tshirt1.jpg'],
-              sizes: [],
-              colors: [],
-              isActive: true,
-              createdAt: '2025-06-01T00:00:00Z',
-              updatedAt: '2025-06-25T00:00:00Z',
-              stock: []
-            },
-            quantity: 2,
-            price: 29.99,
-            size: 'L',
-            color: 'White'
-          }
-        ],
-        createdAt: '2025-06-22T14:15:00Z',
-        updatedAt: '2025-06-24T09:45:00Z',
-        estimatedDelivery: '2025-06-28T00:00:00Z',
-        trackingNumber: 'TRK987654321'
-      }
-    ];
+  // Fetch orders from API
+  const { data: ordersData, isLoading } = useQuery({
+    queryKey: ['customer-orders'],
+    queryFn: () => ordersApi.getOrders(1, 50)
+  });
 
-    setTimeout(() => {
-      setOrders(mockOrders);
-      setLoading(false);
-    }, 1000);
-  }, []);
+  const orders = ordersData?.orders || [];
 
   // Filter orders based on search and status
   const filteredOrders = orders.filter(order => {
@@ -179,7 +52,7 @@ export default function OrdersPage() {
     returned: orders.filter(o => o.status === 'returned').length
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>

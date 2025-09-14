@@ -53,15 +53,6 @@ export const usersApi = {
     return response.data as User;
   },
 
-  activateUser: async (userId: string): Promise<User> => {
-    const response = await ApiService.patch<User>(`/admin/users/${userId}/activate`, {});
-    return response.data as User;
-  },
-
-  deactivateUser: async (userId: string): Promise<User> => {
-    const response = await ApiService.patch<User>(`/admin/users/${userId}/deactivate`, {});
-    return response.data as User;
-  },
 
   // Customer profile management
   getProfile: async (): Promise<User> => {
@@ -116,35 +107,6 @@ export const usersApi = {
     return response.data as ReturnRequest[];
   },
 
-  // Admin user management
-  getAllUsers: async (page = 1, limit = 10, role?: UserRole): Promise<UsersResponse> => {
-    let url = `/admin/users?page=${page}&limit=${limit}`;
-    if (role) {
-      url += `&role=${role}`;
-    }
-    const response = await ApiService.get<UsersResponse>(url);
-    return response.data as UsersResponse;
-  },
-
-  getUserById: async (userId: string): Promise<User> => {
-    const response = await ApiService.get<User>(`/admin/users/${userId}`);
-    return response.data as User;
-  },
-
-  updateUser: async (userId: string, userData: Partial<User>): Promise<User> => {
-    const response = await ApiService.put<User>(`/admin/users/${userId}`, userData);
-    return response.data as User;
-  },
-
-  deactivateUser: async (userId: string): Promise<User> => {
-    const response = await ApiService.patch<User>(`/admin/users/${userId}/deactivate`);
-    return response.data as User;
-  },
-
-  activateUser: async (userId: string): Promise<User> => {
-    const response = await ApiService.patch<User>(`/admin/users/${userId}/activate`);
-    return response.data as User;
-  }
 };
 
 export default usersApi;

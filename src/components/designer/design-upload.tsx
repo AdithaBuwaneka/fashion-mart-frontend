@@ -1,7 +1,9 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
+import { useQuery } from '@tanstack/react-query';
+import { designerApi } from '@/lib/api/designer';
 import Image from 'next/image';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -41,16 +43,6 @@ interface DesignUploadProps {
   acceptedTypes?: string[];
 }
 
-const DESIGN_CATEGORIES = [
-  'Fashion Apparel',
-  'Accessories',
-  'Home Decor',
-  'Textile Patterns',
-  'Graphic Designs',
-  'Illustrations',
-  'Print Designs',
-  'Digital Art'
-];
 
 const ACCEPTED_FILE_TYPES: Record<string, string[]> = {
   'image/jpeg': ['.jpg', '.jpeg'],
@@ -76,6 +68,12 @@ export function DesignUpload({
   });
   const [currentTag, setCurrentTag] = useState('');
   const [isUploading, setIsUploading] = useState(false);
+
+  // Fetch categories from API
+  const { data: categories = [], isLoading: categoriesLoading } = useQuery({
+    queryKey: ['designer-categories'],
+    queryFn: designerApi.getCategories
+  });
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     const newFiles: UploadFile[] = acceptedFiles.map((file) => ({
@@ -314,13 +312,15 @@ export function DesignUpload({
             <select
               value={metadata.category}
               onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setMetadata(prev => ({ ...prev, category: e.target.value }))}
-              disabled={isUploading}
+              disabled={isUploading || categoriesLoading}
               className="w-full px-3 py-2 border border-input rounded-md text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
             >
-              <option value="">Select a category</option>
-              {DESIGN_CATEGORIES.map((category) => (
-                <option key={category} value={category}>
-                  {category}
+              <option value="">
+                {categoriesLoading ? 'Loading categories...' : 'Select a category'}
+              </option>
+              {categories.map((category) => (
+                <option key={category.id} value={category.id}>
+                  {category.name}
                 </option>
               ))}
             </select>

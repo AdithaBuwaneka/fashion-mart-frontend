@@ -3,6 +3,7 @@
 
 import { useRouter } from 'next/navigation';
 import { DesignUpload } from '@/components/designer/design-upload';
+import { designerApi } from '@/lib/api/designer';
 import { toast } from 'sonner';
 
 interface UploadFile {
@@ -26,12 +27,17 @@ export default function DesignUploadPage() {
 
   const handleUpload = async (files: UploadFile[], metadata: DesignMetadata) => {
     try {
-      // TODO: Replace with actual API call
-      console.log('Uploading design:', { files, metadata });
-      
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
+      const designData = {
+        title: metadata.title,
+        description: metadata.description,
+        categoryId: metadata.category, // This should be mapped to category ID
+        tags: metadata.tags,
+        price: parseFloat(metadata.price) || 0,
+        designImages: files.map(f => f.file)
+      };
+
+      await designerApi.createDesign(designData);
+
       toast.success('Design uploaded successfully! It will be reviewed by our team.');
       router.push('/designer/portfolio');
     } catch (error) {

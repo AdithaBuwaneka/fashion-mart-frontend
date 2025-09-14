@@ -2,6 +2,8 @@
 'use client'
 
 import { useState } from 'react'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { inventoryApi } from '@/lib/api/inventory'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -120,17 +122,34 @@ export function DesignApproval() {
   const [selectedCategory, setSelectedCategory] = useState('All Categories')
   const [selectedPriority, setSelectedPriority] = useState('All Priorities')
   const [selectedStatus, setSelectedStatus] = useState('pending')
-  const [selectedDesign, setSelectedDesign] = useState<typeof designSubmissions[0] | null>(null)
+  const [selectedDesign, setSelectedDesign] = useState<any>(null)
   const [approvalComment, setApprovalComment] = useState('')
 
-  const filteredDesigns = designSubmissions.filter(design => {
+  const queryClient = useQueryClient()
+
+  // Fetch pending designs from API
+  const { data: designs = [], isLoading } = useQuery({
+    queryKey: ['pending-designs'],
+    queryFn: inventoryApi.getPendingDesigns
+  })
+
+  // Review design mutation
+  const reviewDesignMutation = useMutation({
+    mutationFn: (reviewData: { designId: string; status: 'approved' | 'rejected'; feedback?: string }) =>
+      inventoryApi.reviewDesign(reviewData),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['pending-designs'] })
+    }
+  })
+
+  const filteredDesigns = designs.filter(design => {
     const matchesSearch = design.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         design.designer.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesCategory = selectedCategory === 'All Categories' || design.category === selectedCategory
-    const matchesPriority = selectedPriority === 'All Priorities' || design.priority === selectedPriority
+                         design.designer?.firstName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         design.designer?.lastName?.toLowerCase().includes(searchTerm.toLowerCase())
+    const matchesCategory = selectedCategory === 'All Categories' || design.category?.name === selectedCategory
     const matchesStatus = selectedStatus === 'all' || design.status === selectedStatus
 
-    return matchesSearch && matchesCategory && matchesPriority && matchesStatus
+    return matchesSearch && matchesCategory && matchesStatus
   })
 
   const getStatusBadge = (status: string) => {
@@ -159,20 +178,36 @@ export function DesignApproval() {
     }
   }
 
-  const handleApprove = (designId: number) => {
-    console.log('Approving design:', designId, 'Comment:', approvalComment)
-    // API call would go here
+  const handleApprove = (designId: string) => {
+    reviewDesignMutation.mutate({
+      designId,
+      status: 'approved',
+      feedback: approvalComment
+    })
     setApprovalComment('')
   }
 
-  const handleReject = (designId: number) => {
-    console.log('Rejecting design:', designId, 'Comment:', approvalComment)
-    // API call would go here
+  const handleReject = (designId: string) => {
+    reviewDesignMutation.mutate({
+      designId,
+      status: 'rejected',
+      feedback: approvalComment
+    })
     setApprovalComment('')
   }
 
   const getStatusCount = (status: string) => {
-    return designSubmissions.filter(design => design.status === status).length
+    return designs.filter(design => design.status === status).length
+  }
+
+  if (isLoading) {
+    return (
+      <Card>
+        <CardContent className="p-6">
+          <div className="text-center">Loading designs...</div>
+        </CardContent>
+      </Card>
+    )
   }
 
   return (

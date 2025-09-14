@@ -66,17 +66,8 @@ export function ReportsGenerator() {
 
   const downloadReport = async (reportId: string) => {
     try {
-      const response = await apiClient.get(`/admin/reports/${reportId}/download`, {
-        responseType: 'blob',
-      });
-      
-      const blob = new Blob([response.data], { type: 'application/pdf' });
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `report-${reportId}.pdf`;
-      link.click();
-      window.URL.revokeObjectURL(url);
+      // Note: Download endpoint not implemented in backend yet
+      console.error('Report download not implemented in backend');
     } catch (error) {
       console.error('Download failed:', error);
     }
