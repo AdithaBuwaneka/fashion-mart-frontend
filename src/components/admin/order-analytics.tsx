@@ -277,7 +277,7 @@ export function OrderAnalytics() {
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{analytics.topCustomers.length}</div>
+            <div className="text-2xl font-bold">{Array.isArray(analytics.topCustomers) ? analytics.topCustomers.length : 0}</div>
             <div className="flex items-center text-xs text-muted-foreground">
               <ArrowUpRight className="h-4 w-4 text-green-500" />
               <span className="text-green-500">{customerGrowth}%</span>
@@ -296,7 +296,7 @@ export function OrderAnalytics() {
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={analytics.salesByDate}>
+              <LineChart data={Array.isArray(analytics.salesByDate) ? analytics.salesByDate : []}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis
                   dataKey="date"
@@ -342,7 +342,7 @@ export function OrderAnalytics() {
             <ResponsiveContainer width="100%" height={300}>
               <PieChart>
                 <Pie
-                  data={analytics.ordersByStatus}
+                  data={Array.isArray(analytics.ordersByStatus) ? analytics.ordersByStatus : []}
                   cx="50%"
                   cy="50%"
                   labelLine={false}
@@ -351,9 +351,9 @@ export function OrderAnalytics() {
                   fill="#8884d8"
                   dataKey="count"
                 >
-                  {analytics.ordersByStatus.map((entry, index) => (
+                  {Array.isArray(analytics.ordersByStatus) ? analytics.ordersByStatus.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                  ))}
+                  )) : null}
                 </Pie>
                 <Tooltip />
               </PieChart>
@@ -371,7 +371,7 @@ export function OrderAnalytics() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {analytics.topProducts.slice(0, 5).map((product, index) => (
+              {Array.isArray(analytics.topProducts) ? analytics.topProducts.slice(0, 5).map((product, index) => (
                 <div key={product.productId} className="flex items-center space-x-4">
                   <div className="flex-shrink-0 w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
                     <span className="text-sm font-medium text-blue-600">{index + 1}</span>
@@ -388,7 +388,7 @@ export function OrderAnalytics() {
                     <Package className="h-5 w-5 text-gray-400" />
                   </div>
                 </div>
-              ))}
+              )) : null}
             </div>
           </CardContent>
         </Card>
@@ -400,7 +400,7 @@ export function OrderAnalytics() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {analytics.topCustomers.slice(0, 5).map((customer, index) => (
+              {Array.isArray(analytics.topCustomers) ? analytics.topCustomers.slice(0, 5).map((customer, index) => (
                 <div key={customer.customerId} className="flex items-center space-x-4">
                   <div className="flex-shrink-0 w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
                     <span className="text-sm font-medium text-green-600">{index + 1}</span>
@@ -417,7 +417,7 @@ export function OrderAnalytics() {
                     <Users className="h-5 w-5 text-gray-400" />
                   </div>
                 </div>
-              ))}
+              )) : null}
             </div>
           </CardContent>
         </Card>

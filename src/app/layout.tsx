@@ -6,6 +6,7 @@ import { ClerkProvider } from '@clerk/nextjs'
 import { Toaster } from 'react-hot-toast'
 import { AuthProvider } from '@/lib/context/auth-context'
 import { NotificationProvider } from '@/lib/context/notification-context'
+import { QueryProvider } from '@/lib/providers/query-client-provider'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -43,22 +44,24 @@ export default function RootLayout({
     >
       <html lang="en">
         <body className={inter.className}>
-          <AuthProvider>
-            <NotificationProvider>
-              {children}
-              <Toaster
-                position="top-right"
-                toastOptions={{
-                  duration: 4000,
-                  style: {
-                    background: 'hsl(var(--background))',
-                    color: 'hsl(var(--foreground))',
-                    border: '1px solid hsl(var(--border))',
-                  },
-                }}
-              />
-            </NotificationProvider>
-          </AuthProvider>
+          <QueryProvider>
+            <AuthProvider>
+              <NotificationProvider>
+                {children}
+                <Toaster
+                  position="top-right"
+                  toastOptions={{
+                    duration: 4000,
+                    style: {
+                      background: 'hsl(var(--background))',
+                      color: 'hsl(var(--foreground))',
+                      border: '1px solid hsl(var(--border))',
+                    },
+                  }}
+                />
+              </NotificationProvider>
+            </AuthProvider>
+          </QueryProvider>
         </body>
       </html>
     </ClerkProvider>

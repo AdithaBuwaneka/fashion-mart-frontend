@@ -169,10 +169,16 @@ export function PaymentManagement() {
   const [isRefundDialogOpen, setIsRefundDialogOpen] = useState(false);
 
   // Get payments list
-  const { data: paymentsData, isLoading, error } = useQuery({
+  const { data: paymentsData, isLoading, error, refetch } = useQuery({
     queryKey: ['payments', currentPage, statusFilter],
     queryFn: () => paymentsApi.getAllPayments(currentPage, 10, statusFilter),
     refetchInterval: 30000, // Refresh every 30 seconds
+    retry: 2,
+    retryDelay: 1000,
+    onError: (err) => {
+      console.error('Failed to fetch payments:', err);
+      toast.error('Failed to load payments data. Please check if the backend server is running.');
+    }
   });
 
   // Get payment statistics
@@ -226,10 +232,31 @@ export function PaymentManagement() {
 
   if (error) {
     return (
-      <div className="text-center p-8 text-red-600">
-        <AlertCircle className="h-8 w-8 mx-auto mb-4" />
-        {error && (() => { console.error('Payments loading error:', error); return null; })()}
-        Error loading payments data
+      <div className="text-center p-8">
+        <AlertCircle className="h-12 w-12 mx-auto mb-4 text-red-500" />
+        <h3 className="text-lg font-semibold text-red-600 mb-2">Unable to Load Payments</h3>
+        <p className="text-gray-600 mb-4">
+          The payment service is currently unavailable. This usually means the backend server is not running.
+        </p>
+        <div className="space-y-2 text-sm text-gray-500 mb-6">
+          <p>• Check if the backend server is running on port 5000</p>
+          <p>• Verify the API endpoint configuration</p>
+          <p>• Contact your system administrator if the issue persists</p>
+        </div>
+        <Button
+          variant="outline"
+          onClick={() => refetch()}
+          className="mr-2"
+        >
+          <RefreshCw className="h-4 w-4 mr-2" />
+          Retry
+        </Button>
+        <Button
+          variant="secondary"
+          onClick={() => window.location.reload()}
+        >
+          Refresh Page
+        </Button>
       </div>
     );
   }
