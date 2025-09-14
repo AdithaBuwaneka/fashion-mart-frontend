@@ -51,10 +51,18 @@ export function AnalyticsCharts() {
 
       // Transform the response to match AnalyticsData interface
       return {
-        revenue: response.revenueByMonth || [],
-        categories: response.revenueByCategory?.map(cat => ({ name: cat.categoryName, value: cat.revenue })) || [],
+        revenue: response.revenueByMonth?.map(month => ({
+          month: month.month,
+          amount: month.revenue,
+          orders: month.orders
+        })) || [],
+        categories: [], // Categories not available in current backend response
         userGrowth: response.revenueByMonth?.map(month => ({ month: month.month, customers: month.orders, designers: 0 })) || [],
-        topProducts: response.topSellingProducts || []
+        topProducts: response.topSellingProducts?.map(product => ({
+          name: product.productName,
+          sales: product.unitsSold,
+          revenue: product.revenue
+        })) || []
       } as AnalyticsData;
     },
     refetchInterval: 60000, // Refresh every minute

@@ -287,7 +287,7 @@ export default function ConnectionTestPage() {
                   {result && (
                     <div className="mt-2">
                       <p className="text-sm">{result.message}</p>
-                      {result.response && (
+                      {result.response ? (
                         <details className="mt-2">
                           <summary className="text-sm text-gray-600 cursor-pointer">
                             View Response
@@ -296,7 +296,7 @@ export default function ConnectionTestPage() {
                             {JSON.stringify(result.response, null, 2)}
                           </pre>
                         </details>
-                      )}
+                      ) : null}
                     </div>
                   )}
                 </div>

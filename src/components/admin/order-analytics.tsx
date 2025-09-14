@@ -124,7 +124,7 @@ export function OrderAnalytics() {
   if (error || !analytics) {
     return (
       <div className="text-center p-8 text-red-600">
-        {error && console.error('Analytics loading error:', error)}
+        {error && (() => { console.error('Analytics loading error:', error); return null; })()}
         Error loading analytics data
         <Button
           variant="outline"

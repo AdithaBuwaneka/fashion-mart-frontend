@@ -176,10 +176,12 @@ export function PaymentManagement() {
   });
 
   // Get payment statistics
-  const { data: paymentStats } = useQuery({
-    queryKey: ['payment-stats', dateRange],
-    queryFn: () => paymentsApi.getPaymentStats(dateRange.startDate, dateRange.endDate),
-  });
+  // Payment stats not available in current API
+  // const { data: paymentStats } = useQuery({
+  //   queryKey: ['payment-stats', dateRange],
+  //   queryFn: () => paymentsApi.getPaymentStats(dateRange.startDate, dateRange.endDate),
+  // });
+  const paymentStats = null;
 
   // Get payments by date range when date filter is applied
   const { data: dateRangeData } = useQuery({
@@ -220,7 +222,7 @@ export function PaymentManagement() {
     return (
       <div className="text-center p-8 text-red-600">
         <AlertCircle className="h-8 w-8 mx-auto mb-4" />
-        {error && console.error('Payments loading error:', error)}
+        {error && (() => { console.error('Payments loading error:', error); return null; })()}
         Error loading payments data
       </div>
     );
@@ -258,9 +260,11 @@ export function PaymentManagement() {
               <DollarSign className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">${paymentStats.totalRevenue.toLocaleString()}</div>
+              <div className="text-2xl font-bold">
+                ${paymentStats?.totalRevenue?.toLocaleString() || '0'}
+              </div>
               <p className="text-xs text-muted-foreground">
-                {paymentStats.totalTransactions} transactions
+                {paymentStats?.totalTransactions || 0} transactions
               </p>
             </CardContent>
           </Card>
@@ -272,10 +276,11 @@ export function PaymentManagement() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                {((paymentStats.successfulPayments / paymentStats.totalTransactions) * 100).toFixed(1)}%
+                {paymentStats?.successfulPayments && paymentStats?.totalTransactions ?
+                  ((paymentStats.successfulPayments / paymentStats.totalTransactions) * 100).toFixed(1) : '0'}%
               </div>
               <p className="text-xs text-muted-foreground">
-                {paymentStats.successfulPayments} successful
+                {paymentStats?.successfulPayments || 0} successful
               </p>
             </CardContent>
           </Card>
@@ -286,9 +291,10 @@ export function PaymentManagement() {
               <div className="h-4 w-4 bg-red-500 rounded-full" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{paymentStats.failedPayments}</div>
+              <div className="text-2xl font-bold">{paymentStats?.failedPayments || 0}</div>
               <p className="text-xs text-muted-foreground">
-                {((paymentStats.failedPayments / paymentStats.totalTransactions) * 100).toFixed(1)}% failure rate
+                {paymentStats?.failedPayments && paymentStats?.totalTransactions ?
+                  ((paymentStats.failedPayments / paymentStats.totalTransactions) * 100).toFixed(1) : '0'}% failure rate
               </p>
             </CardContent>
           </Card>
@@ -299,7 +305,7 @@ export function PaymentManagement() {
               <RotateCcw className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">${paymentStats.refundedAmount.toLocaleString()}</div>
+              <div className="text-2xl font-bold">${paymentStats?.refundedAmount?.toLocaleString() || '0'}</div>
               <p className="text-xs text-muted-foreground">Total refunded</p>
             </CardContent>
           </Card>
