@@ -14,7 +14,6 @@ import { Design } from '@/lib/types';
 import {
   Plus,
   Search,
-  Filter,
   Palette,
   Upload
 } from 'lucide-react';
@@ -212,7 +211,7 @@ export default function DesignerDesignsPage() {
               <div className="flex flex-wrap gap-2 mt-4">
                 {searchQuery && (
                   <Badge variant="secondary" className="gap-1">
-                    Search: "{searchQuery}"
+                    Search: &quot;{searchQuery}&quot;
                     <button
                       type="button"
                       onClick={() => setSearchQuery('')}

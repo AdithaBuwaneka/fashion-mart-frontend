@@ -47,7 +47,7 @@ export const systemApi = {
     stripe: 'healthy' | 'warning' | 'error';
     overallStatus: 'healthy' | 'warning' | 'error';
     timestamp: string;
-    details: Record<string, any>;
+    details: Record<string, unknown>;
   }> => {
     const response = await ApiService.get<{
       database: 'healthy' | 'warning' | 'error';
@@ -57,7 +57,7 @@ export const systemApi = {
       stripe: 'healthy' | 'warning' | 'error';
       overallStatus: 'healthy' | 'warning' | 'error';
       timestamp: string;
-      details: Record<string, any>;
+      details: Record<string, unknown>;
     }>('/admin/system/health');
     return response.data as {
       database: 'healthy' | 'warning' | 'error';
@@ -67,7 +67,7 @@ export const systemApi = {
       stripe: 'healthy' | 'warning' | 'error';
       overallStatus: 'healthy' | 'warning' | 'error';
       timestamp: string;
-      details: Record<string, any>;
+      details: Record<string, unknown>;
     };
   },
 

@@ -138,7 +138,7 @@ export const adminApi = {
   createCustomReport: async (reportData: {
     name: string;
     description?: string;
-    filters: Record<string, any>;
+    filters: Record<string, unknown>;
     dataTypes: string[];
     dateRange: { startDate: string; endDate: string };
   }): Promise<Report> => {

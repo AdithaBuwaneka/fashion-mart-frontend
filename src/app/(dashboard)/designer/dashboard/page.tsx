@@ -10,7 +10,6 @@ import {
   Palette,
   CheckCircle,
   Clock,
-  DollarSign,
   TrendingUp,
   Upload,
   Plus,
