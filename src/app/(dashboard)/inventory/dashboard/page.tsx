@@ -38,11 +38,11 @@ export default function InventoryDashboardPage() {
       ]);
 
       return {
-        totalProducts: products.length,
+        totalProducts: products.products.length,
         lowStockItems: lowStockProducts.length,
-        outOfStockItems: products.filter(p => p.stock?.quantity === 0).length,
+        outOfStockItems: products.products.filter(p => p.stock?.quantity === 0).length,
         pendingDesigns: pendingDesigns.length,
-        totalValue: products.reduce((sum, p) => sum + (p.price * (p.stock?.quantity || 0)), 0),
+        totalValue: products.products.reduce((sum, p) => sum + (p.price * (p.stock?.quantity || 0)), 0),
         monthlyTurnover: 15.7 // This would come from analytics API
       };
     },
@@ -65,9 +65,9 @@ export default function InventoryDashboardPage() {
   const criticalAlerts = lowStockProducts?.slice(0, 3).map(product => ({
     product: product.name,
     currentStock: product.stock?.quantity || 0,
-    minStock: product.stock?.minQuantity || 0,
+    minStock: product.stock?.minThreshold || 0,
     status: (product.stock?.quantity || 0) === 0 ? 'out-of-stock' :
-             (product.stock?.quantity || 0) <= (product.stock?.minQuantity || 0) * 0.3 ? 'critical' : 'warning'
+             (product.stock?.quantity || 0) <= (product.stock?.minThreshold || 0) * 0.3 ? 'critical' : 'warning'
   })) || [];
 
   return (
