@@ -28,7 +28,13 @@ export interface UpdateDesignRequest {
 }
 
 export const designerApi = {
-  // Get all designs by current designer
+  // Get all designs by current designer (simple version)
+  getDesigns: async (): Promise<Design[]> => {
+    const response = await ApiService.get<Design[]>('/designer/designs');
+    return response.data as Design[];
+  },
+
+  // Get all designs by current designer with pagination
   getDesignerDesigns: async (page = 1, limit = 10, status?: DesignStatus): Promise<DesignsResponse> => {
     let url = `/designer/designs?page=${page}&limit=${limit}`;
     if (status) {

@@ -137,10 +137,10 @@ export function OrderAnalytics() {
     );
   }
 
-  // Calculate growth rates (mock data - would come from backend comparison)
-  const revenueGrowth = 12.5; // This would be calculated on backend
-  const orderGrowth = 8.3;
-  const customerGrowth = 15.2;
+  // Use growth rates from backend data
+  const revenueGrowth = analytics.growthRates?.revenue || 0;
+  const orderGrowth = analytics.growthRates?.orders || 0;
+  const customerGrowth = analytics.growthRates?.customers || 0;
 
   return (
     <div className="space-y-6">

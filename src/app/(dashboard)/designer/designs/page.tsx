@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { LoadingScreen } from '@/components/shared/loading-screen';
+import { Design } from '@/lib/types';
 import {
   Plus,
   Search,
@@ -20,48 +21,70 @@ import {
 import Link from 'next/link';
 import toast from 'react-hot-toast';
 
+// Define filter type
+type StatusFilter = 'all' | 'approved' | 'pending';
+
+// Define design counts interface
+interface DesignCounts {
+  all: number;
+  approved: number;
+  pending: number;
+}
+
 export default function DesignerDesignsPage() {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState<'all' | 'approved' | 'pending'>('all');
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
 
   const queryClient = useQueryClient();
 
   // Fetch designs from API
-  const { data: designsData, isLoading } = useQuery({
+  const {
+    data: designsData,
+    isLoading,
+    error
+  } = useQuery<Design[], Error>({
     queryKey: ['designer-designs'],
     queryFn: () => designerApi.getDesigns()
   });
 
   // Delete design mutation
-  const deleteDesignMutation = useMutation({
+  const deleteDesignMutation = useMutation<
+    { success: boolean; message: string },
+    Error,
+    string
+  >({
     mutationFn: (designId: string) => designerApi.deleteDesign(designId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['designer-designs'] });
       toast.success('Design deleted successfully');
     },
-    onError: (error) => {
+    onError: (error: Error) => {
       console.error('Delete design error:', error);
       toast.error('Failed to delete design');
     }
   });
 
   // Submit design for approval mutation
-  const submitDesignMutation = useMutation({
+  const submitDesignMutation = useMutation<
+    Design,
+    Error,
+    string
+  >({
     mutationFn: (designId: string) => designerApi.submitDesign(designId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['designer-designs'] });
       toast.success('Design submitted for approval');
     },
-    onError: (error) => {
+    onError: (error: Error) => {
       console.error('Submit design error:', error);
       toast.error('Failed to submit design');
     }
   });
 
-  const designs = designsData || [];
+  const designs: Design[] = designsData || [];
 
   // Filter designs based on search and status
-  const filteredDesigns = designs.filter(design => {
+  const filteredDesigns: Design[] = designs.filter((design: Design) => {
     const matchesSearch = searchQuery === '' ||
       design.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       design.description.toLowerCase().includes(searchQuery.toLowerCase());
@@ -73,31 +96,61 @@ export default function DesignerDesignsPage() {
     return matchesSearch && matchesStatus;
   });
 
-  const designCounts = {
+  const designCounts: DesignCounts = {
     all: designs.length,
-    approved: designs.filter(d => d.isApproved).length,
-    pending: designs.filter(d => !d.isApproved).length
+    approved: designs.filter((d: Design) => d.isApproved).length,
+    pending: designs.filter((d: Design) => !d.isApproved).length
   };
 
-  const handleEdit = (designId: string) => {
+  const handleEdit = (designId: string): void => {
     window.location.href = `/designer/designs/${designId}/edit`;
   };
 
-  const handleDelete = async (designId: string) => {
-    if (confirm('Are you sure you want to delete this design? This action cannot be undone.')) {
+  const handleDelete = async (designId: string): Promise<void> => {
+    if (window.confirm('Are you sure you want to delete this design? This action cannot be undone.')) {
       deleteDesignMutation.mutate(designId);
     }
   };
 
-  const handleToggleApproval = async (designId: string) => {
-    const design = designs.find(d => d.id === designId);
+  const handleToggleApproval = async (designId: string): Promise<void> => {
+    const design: Design | undefined = designs.find((d: Design) => d.id === designId);
     if (design && !design.isApproved) {
       submitDesignMutation.mutate(designId);
     }
   };
 
+  // Handle filter change
+  const handleStatusFilterChange = (event: React.ChangeEvent<HTMLSelectElement>): void => {
+    setStatusFilter(event.target.value as StatusFilter);
+  };
+
+  // Handle clear filters
+  const handleClearFilters = (): void => {
+    setSearchQuery('');
+    setStatusFilter('all');
+  };
+
   if (isLoading) {
     return <LoadingScreen />;
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-xl font-semibold text-red-600 mb-2">Error loading designs</h2>
+          <p className="text-gray-600 mb-4">
+            {error.message || 'Failed to load your designs. Please try again.'}
+          </p>
+          <Button
+            onClick={() => window.location.reload()}
+            variant="outline"
+          >
+            Retry
+          </Button>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -137,7 +190,7 @@ export default function DesignerDesignsPage() {
                 <Input
                   placeholder="Search designs..."
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
                   className="pl-10"
                 />
               </div>
@@ -145,7 +198,7 @@ export default function DesignerDesignsPage() {
               {/* Status Filter */}
               <select
                 value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value as 'all' | 'approved' | 'pending')}
+                onChange={handleStatusFilterChange}
                 className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="all">All Designs ({designCounts.all})</option>
@@ -160,13 +213,25 @@ export default function DesignerDesignsPage() {
                 {searchQuery && (
                   <Badge variant="secondary" className="gap-1">
                     Search: "{searchQuery}"
-                    <button onClick={() => setSearchQuery('')}>×</button>
+                    <button
+                      type="button"
+                      onClick={() => setSearchQuery('')}
+                      className="ml-1 hover:bg-gray-200 rounded px-1"
+                    >
+                      ×
+                    </button>
                   </Badge>
                 )}
                 {statusFilter !== 'all' && (
                   <Badge variant="secondary" className="gap-1">
                     Status: {statusFilter}
-                    <button onClick={() => setStatusFilter('all')}>×</button>
+                    <button
+                      type="button"
+                      onClick={() => setStatusFilter('all')}
+                      className="ml-1 hover:bg-gray-200 rounded px-1"
+                    >
+                      ×
+                    </button>
                   </Badge>
                 )}
               </div>
@@ -188,10 +253,7 @@ export default function DesignerDesignsPage() {
               }
             </p>
             {searchQuery || statusFilter !== 'all' ? (
-              <Button onClick={() => {
-                setSearchQuery('');
-                setStatusFilter('all');
-              }}>
+              <Button onClick={handleClearFilters}>
                 Clear Filters
               </Button>
             ) : (
@@ -205,7 +267,7 @@ export default function DesignerDesignsPage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {filteredDesigns.map((design) => (
+            {filteredDesigns.map((design: Design) => (
               <DesignCard
                 key={design.id}
                 design={design}

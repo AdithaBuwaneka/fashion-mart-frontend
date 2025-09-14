@@ -1,45 +1,50 @@
 // src/app/(dashboard)/customer/dashboard/page.tsx
 'use client'
 
+import { useQuery } from '@tanstack/react-query'
+import { ordersApi } from '@/lib/api/orders'
+import { usersApi } from '@/lib/api/users'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { 
-  ShoppingBag, 
-  Package, 
+import {
+  ShoppingBag,
+  Package,
   Heart,
   Star,
   ArrowRight,
   Clock
 } from 'lucide-react'
 import { RoleGuard } from '@/components/shared/role-guard'
+import { LoadingScreen } from '@/components/shared/loading-screen'
 import Link from 'next/link'
 
 export default function CustomerDashboard() {
-  // Mock data
-  const userStats = {
-    totalOrders: 12,
-    pendingOrders: 2,
-    favoriteItems: 8,
-    rewardPoints: 1250
+  // Fetch user stats from API
+  const { data: userProfile, isLoading: profileLoading } = useQuery({
+    queryKey: ['customer-profile'],
+    queryFn: () => usersApi.getUserProfile()
+  });
+
+  // Fetch recent orders from API
+  const { data: ordersData, isLoading: ordersLoading } = useQuery({
+    queryKey: ['customer-orders-recent'],
+    queryFn: () => ordersApi.getOrders(1, 3) // Get first 3 orders for dashboard
+  });
+
+  const isLoading = profileLoading || ordersLoading;
+
+  if (isLoading) {
+    return <LoadingScreen />;
   }
 
-  const recentOrders = [
-    {
-      id: 'ORD-001',
-      date: '2024-06-25',
-      status: 'delivered',
-      total: 89.99,
-      items: 2
-    },
-    {
-      id: 'ORD-002', 
-      date: '2024-06-20',
-      status: 'shipped',
-      total: 156.50,
-      items: 3
-    }
-  ]
+  const recentOrders = ordersData?.orders || [];
+  const userStats = {
+    totalOrders: ordersData?.total || 0,
+    pendingOrders: recentOrders.filter(order => ['pending', 'confirmed', 'processing', 'shipped'].includes(order.status)).length,
+    favoriteItems: userProfile?.wishlistCount || 0,
+    rewardPoints: userProfile?.loyaltyPoints || 0
+  }
 
   return (
     <RoleGuard allowedRoles={['customer']}>
@@ -136,31 +141,43 @@ export default function CustomerDashboard() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {recentOrders.map((order) => (
-                <div key={order.id} className="flex items-center justify-between p-4 border border-border rounded-lg">
-                  <div className="flex items-center space-x-4">
-                    <div className="p-2 bg-primary/10 rounded-full">
-                      <Package className="h-4 w-4 text-primary" />
-                    </div>
-                    <div>
-                      <p className="font-medium">{order.id}</p>
-                      <p className="text-sm text-muted-foreground">{order.date}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center space-x-4">
-                    <div className="text-right">
-                      <p className="font-medium">${order.total}</p>
-                      <p className="text-sm text-muted-foreground">{order.items} items</p>
-                    </div>
-                    <Badge 
-                      variant={order.status === 'delivered' ? 'success' : 'secondary'}
-                      className="capitalize"
-                    >
-                      {order.status}
-                    </Badge>
-                  </div>
+              {recentOrders.length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  <Package className="h-12 w-12 mx-auto mb-4 text-muted-foreground/50" />
+                  <p>No orders yet. Start shopping to see your orders here!</p>
+                  <Button className="mt-4" asChild>
+                    <Link href="/customer/products">Browse Products</Link>
+                  </Button>
                 </div>
-              ))}
+              ) : (
+                recentOrders.map((order) => (
+                  <div key={order.id} className="flex items-center justify-between p-4 border border-border rounded-lg">
+                    <div className="flex items-center space-x-4">
+                      <div className="p-2 bg-primary/10 rounded-full">
+                        <Package className="h-4 w-4 text-primary" />
+                      </div>
+                      <div>
+                        <p className="font-medium">{order.orderNumber}</p>
+                        <p className="text-sm text-muted-foreground">
+                          {new Date(order.createdAt).toLocaleDateString()}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-4">
+                      <div className="text-right">
+                        <p className="font-medium">${order.totalAmount.toFixed(2)}</p>
+                        <p className="text-sm text-muted-foreground">{order.items.length} items</p>
+                      </div>
+                      <Badge
+                        variant={order.status === 'delivered' ? 'success' : 'secondary'}
+                        className="capitalize"
+                      >
+                        {order.status}
+                      </Badge>
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
           </CardContent>
         </Card>
