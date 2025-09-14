@@ -59,7 +59,6 @@ export function OrderAnalytics() {
   });
 
   // Get order analytics data
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { data: analytics, isLoading, error, refetch } = useQuery({
     queryKey: ['order-analytics', dateRange.startDate, dateRange.endDate],
     queryFn: () => ordersApi.getOrderAnalytics(dateRange.startDate, dateRange.endDate),
@@ -112,7 +111,8 @@ export function OrderAnalytics() {
       window.URL.revokeObjectURL(url);
 
       toast.success(`Analytics exported successfully as ${format.toUpperCase()}`);
-    } catch (error) {
+    } catch (err) {
+      console.error('Export error:', err);
       toast.error('Failed to export analytics');
     }
   };
@@ -124,8 +124,7 @@ export function OrderAnalytics() {
   if (error || !analytics) {
     return (
       <div className="text-center p-8 text-red-600">
-        {/* eslint-disable-next-line @typescript-eslint/no-unused-expressions */}
-        {console.error('Analytics loading error:', error)}
+        {error && console.error('Analytics loading error:', error)}
         Error loading analytics data
         <Button
           variant="outline"

@@ -169,7 +169,6 @@ export function PaymentManagement() {
   const [isRefundDialogOpen, setIsRefundDialogOpen] = useState(false);
 
   // Get payments list
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { data: paymentsData, isLoading, error } = useQuery({
     queryKey: ['payments', currentPage, statusFilter],
     queryFn: () => paymentsApi.getAllPayments(currentPage, 10, statusFilter),
@@ -207,7 +206,8 @@ export function PaymentManagement() {
     try {
       // This would need to be implemented in the backend
       toast.info('Export functionality will be implemented soon');
-    } catch (error) {
+    } catch (err) {
+      console.error('Export error:', err);
       toast.error('Failed to export payments');
     }
   };
@@ -220,8 +220,7 @@ export function PaymentManagement() {
     return (
       <div className="text-center p-8 text-red-600">
         <AlertCircle className="h-8 w-8 mx-auto mb-4" />
-        {/* eslint-disable-next-line @typescript-eslint/no-unused-expressions */}
-        {console.error('Payments loading error:', error)}
+        {error && console.error('Payments loading error:', error)}
         Error loading payments data
       </div>
     );

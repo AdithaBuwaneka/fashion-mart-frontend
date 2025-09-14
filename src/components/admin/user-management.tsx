@@ -1,9 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { usersApi } from '@/lib/api/users';
-import { User, UserRole } from '@/lib/types';
+import { UserRole } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -84,7 +84,6 @@ export function UserManagement() {
     status: 'all',
   });
 
-  const queryClient = useQueryClient();
 
   const { data: usersData, isLoading } = useQuery({
     queryKey: ['admin-users', filters],
@@ -96,19 +95,8 @@ export function UserManagement() {
 
   const users = usersData?.users || [];
 
-  const updateUserRoleMutation = useMutation({
-    mutationFn: async ({ userId, role }: { userId: string; role: UserRole }) => {
-      return await usersApi.updateUserRole(userId, role);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-users'] });
-    },
-  });
 
 
-  const updateUserRole = async (userId: string, newRole: UserRole) => {
-    updateUserRoleMutation.mutate({ userId, role: newRole });
-  };
 
   const getRoleBadgeColor = (role: UserRole) => {
     switch (role) {

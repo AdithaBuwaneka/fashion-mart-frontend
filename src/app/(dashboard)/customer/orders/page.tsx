@@ -1,9 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { ordersApi } from '@/lib/api/orders';
-import { Order, OrderStatus } from '@/lib/types';
+import { OrderStatus } from '@/lib/types';
 import { OrderHistory } from '@/components/customer/order-history';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';

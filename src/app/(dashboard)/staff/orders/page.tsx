@@ -65,7 +65,7 @@ export default function StaffOrdersPage() {
       email: order.customer?.email || 'No email'
     },
     status: order.status,
-    priority: (order as any).priority || 'medium', // Add priority field to Order type if needed
+    priority: (order as Order & { priority?: string }).priority || 'medium',
     total: order.totalAmount,
     items: order.items?.length || 0,
     createdAt: order.createdAt,

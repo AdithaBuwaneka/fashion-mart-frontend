@@ -42,7 +42,8 @@ import {
 } from '@/components/ui/dropdown-menu'
 import Image from 'next/image'
 
-// Mock design data
+/*
+// Mock design data (kept for reference but not used)
 const designSubmissions = [
   {
     id: 1,
@@ -113,6 +114,7 @@ const designSubmissions = [
     comments: 3
   }
 ]
+*/
 
 const categories = ['All Categories', 'Dresses', 'T-Shirts', 'Jackets', 'Accessories']
 const priorities = ['All Priorities', 'high', 'medium', 'low']
@@ -122,7 +124,7 @@ export function DesignApproval() {
   const [selectedCategory, setSelectedCategory] = useState('All Categories')
   const [selectedPriority, setSelectedPriority] = useState('All Priorities')
   const [selectedStatus, setSelectedStatus] = useState('pending')
-  const [selectedDesign, setSelectedDesign] = useState<any>(null)
+  const [selectedDesign, setSelectedDesign] = useState<typeof designs[0] | null>(null)
   const [approvalComment, setApprovalComment] = useState('')
 
   const queryClient = useQueryClient()

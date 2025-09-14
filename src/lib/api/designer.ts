@@ -53,7 +53,7 @@ export const designerApi = {
     formData.append('tags', JSON.stringify(designData.tags));
 
     // Add design images
-    designData.designImages.forEach((file, index) => {
+    designData.designImages.forEach((file) => {
       formData.append('designImages', file);
     });
 
@@ -78,7 +78,7 @@ export const designerApi = {
       if (designData.tags) formData.append('tags', JSON.stringify(designData.tags));
 
       // Add design images
-      designData.designImages.forEach((file, index) => {
+      designData.designImages.forEach((file) => {
         formData.append('designImages', file);
       });
 

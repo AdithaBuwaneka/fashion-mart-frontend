@@ -64,12 +64,12 @@ export function ReportsGenerator() {
     },
   });
 
-  const downloadReport = async (reportId: string) => {
+  const downloadReport = async () => {
     try {
       // Note: Download endpoint not implemented in backend yet
       console.error('Report download not implemented in backend');
-    } catch (error) {
-      console.error('Download failed:', error);
+    } catch (err) {
+      console.error('Download failed:', err);
     }
   };
 
@@ -239,7 +239,7 @@ export function ReportsGenerator() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => downloadReport(report.id)}
+                        onClick={() => downloadReport()}
                       >
                         <Download className="h-4 w-4" />
                       </Button>
