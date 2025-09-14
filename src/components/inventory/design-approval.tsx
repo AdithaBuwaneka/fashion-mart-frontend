@@ -301,8 +301,8 @@ export function DesignApproval() {
                       }}
                     />
                     <div className="absolute top-2 right-2 flex gap-2">
-                      {getPriorityBadge(design.priority)}
-                      {getStatusBadge(design.status)}
+                      {getPriorityBadge('medium')}
+                      {getStatusBadge('pending')}
                     </div>
                   </div>
                   <CardContent className="p-4">
@@ -311,23 +311,25 @@ export function DesignApproval() {
                         <h3 className="font-semibold line-clamp-2">{design.name}</h3>
                         <div className="flex items-center gap-2 mt-1">
                           <User className="w-4 h-4 text-muted-foreground" />
-                          <span className="text-sm text-muted-foreground">{design.designer}</span>
+                          <span className="text-sm text-muted-foreground">
+                            {design.designer?.firstName} {design.designer?.lastName}
+                          </span>
                         </div>
                       </div>
 
                       <div className="flex items-center gap-4 text-sm text-muted-foreground">
                         <div className="flex items-center gap-1">
                           <Calendar className="w-4 h-4" />
-                          {design.submittedDate}
+                          {new Date(design.createdAt).toLocaleDateString()}
                         </div>
                         <div className="flex items-center gap-1">
                           <MessageSquare className="w-4 h-4" />
-                          {design.comments}
+                          0 comments
                         </div>
                       </div>
 
                       <div className="flex flex-wrap gap-1">
-                        {design.tags.map((tag) => (
+                        {design.tags?.map((tag) => (
                           <Badge key={tag} variant="outline" className="text-xs">
                             {tag}
                           </Badge>
@@ -337,20 +339,16 @@ export function DesignApproval() {
                       <div className="space-y-1 text-sm">
                         <div className="flex justify-between">
                           <span className="text-muted-foreground">Est. Cost:</span>
-                          <span>${design.estimatedCost}</span>
+                          <span>$0</span>
                         </div>
                         <div className="flex justify-between">
                           <span className="text-muted-foreground">Profit:</span>
-                          <span className="text-green-600">${design.expectedProfit}</span>
+                          <span className="text-green-600">$0</span>
                         </div>
                         <div className="flex justify-between">
                           <span className="text-muted-foreground">Demand:</span>
-                          <span className={
-                            design.marketDemand === 'high' ? 'text-green-600' :
-                            design.marketDemand === 'medium' ? 'text-yellow-600' :
-                            'text-red-600'
-                          }>
-                            {design.marketDemand}
+                          <span className="text-yellow-600">
+                            Medium
                           </span>
                         </div>
                       </div>
@@ -372,7 +370,7 @@ export function DesignApproval() {
                             <DialogHeader>
                               <DialogTitle>{design.name}</DialogTitle>
                               <DialogDescription>
-                                Design submission by {design.designer}
+                                Design submission by {design.designer?.firstName} {design.designer?.lastName}
                               </DialogDescription>
                             </DialogHeader>
                             {selectedDesign && (
@@ -380,8 +378,8 @@ export function DesignApproval() {
                                 {/* Design Image */}
                                 <div className="aspect-video relative bg-muted rounded-lg overflow-hidden">
                                   <Image
-                                    src={selectedDesign.thumbnail}
-                                    alt={selectedDesign.title}
+                                    src={selectedDesign.imageUrl}
+                                    alt={selectedDesign.name}
                                     fill
                                     className="object-cover"
                                     onError={(e) => {
