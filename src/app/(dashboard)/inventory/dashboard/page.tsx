@@ -40,9 +40,14 @@ export default function InventoryDashboardPage() {
       return {
         totalProducts: products.products.length,
         lowStockItems: lowStockProducts.length,
-        outOfStockItems: products.products.filter(p => p.stock?.quantity === 0).length,
+        outOfStockItems: products.products.filter(p =>
+          p.stock.every(s => s.quantity === 0) || p.stock.length === 0
+        ).length,
         pendingDesigns: pendingDesigns.length,
-        totalValue: products.products.reduce((sum, p) => sum + (p.price * (p.stock?.quantity || 0)), 0),
+        totalValue: products.products.reduce((sum, p) => {
+          const totalStock = p.stock.reduce((stockSum, s) => stockSum + s.quantity, 0);
+          return sum + (p.price * totalStock);
+        }, 0),
         monthlyTurnover: 15.7 // This would come from analytics API
       };
     },
