@@ -119,6 +119,12 @@ export const adminApi = {
     return response.data as Report;
   },
 
+  // Get report by ID
+  getReportById: async (reportId: string): Promise<Report> => {
+    const response = await ApiService.get<Report>(`/admin/reports/${reportId}`);
+    return response.data as Report;
+  },
+
   // Delete report
   deleteReport: async (reportId: string): Promise<{ success: boolean; message: string }> => {
     const response = await ApiService.delete<{ success: boolean; message: string }>(`/admin/reports/${reportId}`);
